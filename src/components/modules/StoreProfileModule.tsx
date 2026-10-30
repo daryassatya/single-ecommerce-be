@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { storeProfileService } from '@/services/storeProfileService';
+import { productsService } from '@/services/productsService';
 import { StoreProfile, StoreProfileInput } from '@/types/database';
 import { Button } from '@/components/ui/Button';
 import { Switch } from '@/components/ui/Switch';
@@ -29,6 +30,7 @@ export function StoreProfileModule() {
   const [bio, setBio] = useState('');
   const [whatsappNumber, setWhatsappNumber] = useState('6281400688284');
   const [isOpen, setIsOpen] = useState(true);
+  const [productCount, setProductCount] = useState<number | null>(null);
   const [statGoodies, setStatGoodies] = useState('56');
   const [statFolls, setStatFolls] = useState('3.2k');
   const [statFolks, setStatFolks] = useState('4.1k');
@@ -49,7 +51,13 @@ export function StoreProfileModule() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const data = await storeProfileService.get();
+      const [data, prods] = await Promise.all([
+        storeProfileService.get(),
+        productsService.getAll().catch(() => []),
+      ]);
+      const currentProdsCount = prods.length;
+      setProductCount(currentProdsCount);
+
       if (data) {
         setProfile(data);
         setStoreName(data.store_name);
@@ -58,13 +66,16 @@ export function StoreProfileModule() {
         setBio(data.bio);
         setWhatsappNumber(data.whatsapp_number);
         setIsOpen(data.is_open);
-        setStatGoodies(data.stat_goodies);
+        // Automatically take Goodies from current product count
+        setStatGoodies(currentProdsCount > 0 ? String(currentProdsCount) : (data.stat_goodies || '0'));
         setStatFolls(data.stat_folls);
         setStatFolks(data.stat_folks);
         setAnnouncementText(data.announcement_text);
         if (data.marquee_messages && data.marquee_messages.length > 0) {
           setMarqueeMessages(data.marquee_messages);
         }
+      } else if (currentProdsCount > 0) {
+        setStatGoodies(String(currentProdsCount));
       }
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : 'Gagal memuat profil toko';
@@ -103,7 +114,7 @@ export function StoreProfileModule() {
         bio: bio.trim(),
         whatsapp_number: whatsappNumber.trim(),
         is_open: isOpen,
-        stat_goodies: statGoodies.trim(),
+        stat_goodies: productCount !== null ? String(productCount) : statGoodies.trim(),
         stat_folls: statFolls.trim(),
         stat_folks: statFolks.trim(),
         announcement_text: announcementText.trim(),
@@ -286,14 +297,23 @@ export function StoreProfileModule() {
 
             <div className="grid grid-cols-3 gap-3 text-center">
               <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase">Goodies</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase">Goodies</label>
+                  {productCount !== null && (
+                    <span className="text-[9px] font-bold text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded border border-brand-200">
+                      Auto: {productCount}
+                    </span>
+                  )}
+                </div>
                 <input
                   type="text"
                   value={statGoodies}
                   onChange={(e) => setStatGoodies(e.target.value)}
-                  className="mt-1 w-full text-center px-2 py-2 text-xs font-bold rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                  className="w-full text-center px-2 py-2 text-xs font-bold rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
-                <span className="text-[10px] text-slate-400 block mt-1">Digital goodies</span>
+                <span className="text-[10px] text-slate-400 block mt-1">
+                  {productCount !== null ? `Diambil dari ${productCount} produk aktif` : 'Digital goodies'}
+                </span>
               </div>
 
               <div>
