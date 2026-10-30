@@ -159,7 +159,15 @@ export function LoginPage() {
 
         {/* Footer */}
         <p className="mt-8 text-center text-xs text-slate-400">
-          &copy; 2026 Syafira Store. Dilindungi sistem keamanan enkripsi.
+          &copy; 2026 Syafira Store &bull; Sistem dibuat oleh{" "}
+          <a
+            href="https://daryas.tech/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-slate-500 hover:text-brand-600 underline underline-offset-2 transition"
+          >
+            daryas.tech
+          </a>
         </p>
       </div>
     </div>

@@ -185,6 +185,18 @@ export function Sidebar({ currentTab, onTabChange, isOpen, onClose }: SidebarPro
             <LogOut className="w-3.5 h-3.5" />
             <span>Keluar (Logout)</span>
           </button>
+
+          <div className="mt-3 text-center text-[10px] text-slate-400">
+            <span>Sistem dibuat oleh </span>
+            <a
+              href="https://daryas.tech/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-slate-500 hover:text-brand-600 transition underline underline-offset-2"
+            >
+              daryas.tech
+            </a>
+          </div>
         </div>
       </aside>
     </>
