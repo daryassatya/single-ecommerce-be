@@ -2,19 +2,21 @@ import { useState, useEffect } from 'react';
 import { productsService } from '@/services/productsService';
 import { productTypesService } from '@/services/productTypesService';
 import { socialLinksService } from '@/services/socialLinksService';
-import { messageSettingsService } from '@/services/messageSettingsService';
-import { Product, ProductType, SocialMediaLink } from '@/types/database';
+import { testimonialsService } from '@/services/testimonialsService';
+import { heroSlidesService } from '@/services/heroSlidesService';
+import { termsService } from '@/services/termsService';
+import { Product, ProductType, SocialMediaLink, Testimonial, HeroSlide, TermsAndCondition } from '@/types/database';
 import { DynamicIcon } from '@/lib/icons';
 import { formatRupiah } from '@/lib/utils';
 import {
   Package,
   Layers,
   Share2,
-  MessageSquareText,
   ArrowUpRight,
   Sparkles,
-  CheckCircle2,
   Database,
+  Heart,
+  FileText,
   Terminal,
 } from 'lucide-react';
 import { NavTab } from '../layout/Sidebar';
@@ -27,23 +29,30 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [types, setTypes] = useState<ProductType[]>([]);
   const [socials, setSocials] = useState<SocialMediaLink[]>([]);
-  const [hasMessageTemplate, setHasMessageTemplate] = useState(false);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [slides, setSlides] = useState<HeroSlide[]>([]);
+  const [terms, setTerms] = useState<TermsAndCondition[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadStats() {
       try {
         setLoading(true);
-        const [prodsData, typesData, socialsData, msgData] = await Promise.all([
-          productsService.getAll().catch(() => []),
-          productTypesService.getAll().catch(() => []),
-          socialLinksService.getAll().catch(() => []),
-          messageSettingsService.get().catch(() => null),
-        ]);
+        const [prodsData, typesData, socialsData, testiData, slidesData, termsData] =
+          await Promise.all([
+            productsService.getAll().catch(() => []),
+            productTypesService.getAll().catch(() => []),
+            socialLinksService.getAll().catch(() => []),
+            testimonialsService.getAll().catch(() => []),
+            heroSlidesService.getAll().catch(() => []),
+            termsService.getAll().catch(() => []),
+          ]);
         setProducts(prodsData);
         setTypes(typesData);
         setSocials(socialsData);
-        setHasMessageTemplate(!!msgData?.message_template);
+        setTestimonials(testiData);
+        setSlides(slidesData);
+        setTerms(termsData);
       } finally {
         setLoading(false);
       }
@@ -101,7 +110,7 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
       </div>
 
       {/* Metric Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {/* Total Produk */}
         <div
           onClick={() => onNavigate('products')}
@@ -119,7 +128,7 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
             </div>
             <p className="mt-1 text-xs text-slate-500 flex items-center gap-1.5">
               <span className="font-semibold text-emerald-600">{activeProducts.length} aktif</span>
-              <span>· Tanpa file gambar</span>
+              <span>· Katalog Shop</span>
             </p>
           </div>
           <ArrowUpRight className="absolute right-4 bottom-4 w-4 h-4 text-slate-300 group-hover:text-brand-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
@@ -141,33 +150,85 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
               {loading ? '-' : types.length}
             </div>
             <p className="mt-1 text-xs text-slate-500">
-              <span className="font-semibold text-emerald-600">{activeTypes.length} aktif</span> di etalase
+              <span className="font-semibold text-emerald-600">{activeTypes.length} aktif</span> di filter etalase
             </p>
           </div>
           <ArrowUpRight className="absolute right-4 bottom-4 w-4 h-4 text-slate-300 group-hover:text-indigo-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
         </div>
 
-        {/* Template Pesan */}
+        {/* Testimoni Pembeli */}
         <div
-          onClick={() => onNavigate('message')}
+          onClick={() => onNavigate('testimonials')}
           className="group relative cursor-pointer overflow-hidden rounded-2xl bg-white p-5 shadow-sm border border-slate-200/80 hover:border-brand-300 hover:shadow-md transition-all"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Pesan WhatsApp</span>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-              <MessageSquareText className="w-5 h-5" />
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Testimoni Pembeli</span>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-colors">
+              <Heart className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-extrabold text-slate-900 flex items-center gap-1.5">
-              {hasMessageTemplate ? 'Terkonfigurasi' : 'Standar'}
+            <div className="text-3xl font-extrabold text-slate-900">
+              {loading ? '-' : testimonials.length}
             </div>
-            <p className="mt-1 text-xs text-slate-500 flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-              Dynamic Variable Token
+            <p className="mt-1 text-xs text-slate-500">
+              <span className="font-semibold text-emerald-600">
+                {testimonials.filter((t) => t.is_approved).length} disetujui
+              </span>{' '}
+              · Sweet Stories
             </p>
           </div>
-          <ArrowUpRight className="absolute right-4 bottom-4 w-4 h-4 text-slate-300 group-hover:text-emerald-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+          <ArrowUpRight className="absolute right-4 bottom-4 w-4 h-4 text-slate-300 group-hover:text-rose-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+        </div>
+
+        {/* Hero Slides */}
+        <div
+          onClick={() => onNavigate('hero')}
+          className="group relative cursor-pointer overflow-hidden rounded-2xl bg-white p-5 shadow-sm border border-slate-200/80 hover:border-brand-300 hover:shadow-md transition-all"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Hero Carousel</span>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+              <Sparkles className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-3xl font-extrabold text-slate-900">
+              {loading ? '-' : slides.length}
+            </div>
+            <p className="mt-1 text-xs text-slate-500">
+              <span className="font-semibold text-emerald-600">
+                {slides.filter((s) => s.is_active).length} slide tayang
+              </span>{' '}
+              di beranda
+            </p>
+          </div>
+          <ArrowUpRight className="absolute right-4 bottom-4 w-4 h-4 text-slate-300 group-hover:text-amber-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+        </div>
+
+        {/* Syarat & Ketentuan */}
+        <div
+          onClick={() => onNavigate('terms')}
+          className="group relative cursor-pointer overflow-hidden rounded-2xl bg-white p-5 shadow-sm border border-slate-200/80 hover:border-brand-300 hover:shadow-md transition-all"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Syarat &amp; Ketentuan</span>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-50 text-sky-600 group-hover:bg-sky-600 group-hover:text-white transition-colors">
+              <FileText className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-3xl font-extrabold text-slate-900">
+              {loading ? '-' : terms.length}
+            </div>
+            <p className="mt-1 text-xs text-slate-500">
+              <span className="font-semibold text-emerald-600">
+                {terms.filter((t) => t.is_active).length} aturan aktif
+              </span>{' '}
+              (Apps, Robux, MLBB)
+            </p>
+          </div>
+          <ArrowUpRight className="absolute right-4 bottom-4 w-4 h-4 text-slate-300 group-hover:text-sky-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
         </div>
 
         {/* Social Media Links */}
@@ -176,7 +237,7 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
           className="group relative cursor-pointer overflow-hidden rounded-2xl bg-white p-5 shadow-sm border border-slate-200/80 hover:border-brand-300 hover:shadow-md transition-all"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Social Links</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Social &amp; Quick Links</span>
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600 group-hover:bg-violet-600 group-hover:text-white transition-colors">
               <Share2 className="w-5 h-5" />
             </div>

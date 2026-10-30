@@ -210,9 +210,19 @@ export function SocialLinksModule() {
                         </div>
                         <div>
                           <div className="font-semibold text-slate-900">{link.title}</div>
-                          <span className="text-[11px] font-mono text-slate-400">
-                            lucide:{link.icon_name}
-                          </span>
+                          {link.description && (
+                            <p className="text-xs text-slate-500 line-clamp-1">{link.description}</p>
+                          )}
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-[10px] font-mono text-slate-400">
+                              lucide:{link.icon_name}
+                            </span>
+                            {link.tab_target && (
+                              <span className="text-[10px] font-semibold text-brand-600 bg-brand-50 px-1.5 rounded">
+                                Tab: {link.tab_target}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </td>

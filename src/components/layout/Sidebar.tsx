@@ -10,9 +10,22 @@ import {
   ExternalLink,
   Sparkles,
   LogOut,
+  Heart,
+  FileText,
+  Store,
 } from 'lucide-react';
 
-export type NavTab = 'overview' | 'types' | 'products' | 'message' | 'social' | 'settings';
+export type NavTab =
+  | 'overview'
+  | 'products'
+  | 'types'
+  | 'testimonials'
+  | 'hero'
+  | 'terms'
+  | 'social'
+  | 'message'
+  | 'profile'
+  | 'settings';
 
 interface SidebarProps {
   currentTab: NavTab;
@@ -25,10 +38,14 @@ export function Sidebar({ currentTab, onTabChange, isOpen, onClose }: SidebarPro
   const { logout } = useAuth();
   const menuItems = [
     { id: 'overview' as NavTab, label: 'Overview', icon: LayoutDashboard, badge: null },
-    { id: 'products' as NavTab, label: 'Katalog Produk', icon: Package, badge: 'Lucide' },
+    { id: 'products' as NavTab, label: 'Katalog Produk', icon: Package, badge: 'Shop' },
     { id: 'types' as NavTab, label: 'Tipe / Kategori', icon: Layers, badge: null },
-    { id: 'message' as NavTab, label: 'Template Pesan', icon: MessageSquareText, badge: 'WhatsApp' },
-    { id: 'social' as NavTab, label: 'Social Media', icon: Share2, badge: null },
+    { id: 'testimonials' as NavTab, label: 'Testimoni Pembeli', icon: Heart, badge: 'Stories' },
+    { id: 'hero' as NavTab, label: 'Hero Carousel', icon: Sparkles, badge: 'Slides' },
+    { id: 'terms' as NavTab, label: 'Syarat & Ketentuan', icon: FileText, badge: 'T&C' },
+    { id: 'social' as NavTab, label: 'Social & Quick Links', icon: Share2, badge: 'Cards' },
+    { id: 'message' as NavTab, label: 'Template Pesan WA', icon: MessageSquareText, badge: 'Checkout' },
+    { id: 'profile' as NavTab, label: 'Profil Toko & Ticker', icon: Store, badge: 'Bio' },
     { id: 'settings' as NavTab, label: 'Pengaturan CMS', icon: Sliders, badge: null },
   ];
 

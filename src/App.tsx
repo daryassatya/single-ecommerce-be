@@ -9,6 +9,10 @@ import { ProductsModule } from '@/components/modules/ProductsModule';
 import { ProductTypesModule } from '@/components/modules/ProductTypesModule';
 import { CustomerMessageModule } from '@/components/modules/CustomerMessageModule';
 import { SocialLinksModule } from '@/components/modules/SocialLinksModule';
+import { TestimonialsModule } from '@/components/modules/TestimonialsModule';
+import { HeroSlidesModule } from '@/components/modules/HeroSlidesModule';
+import { TermsModule } from '@/components/modules/TermsModule';
+import { StoreProfileModule } from '@/components/modules/StoreProfileModule';
 import { SettingsModule } from '@/components/modules/SettingsModule';
 import { Sparkles } from 'lucide-react';
 import { isSupabaseConfigured } from '@/lib/supabase';
@@ -23,8 +27,12 @@ function DashboardContent() {
     overview: 'Ringkasan & Metrik Toko',
     products: 'Manajemen Produk (Lucide Icons)',
     types: 'Tipe Produk & Kategori',
-    message: 'Pengaturan Pesan WhatsApp',
-    social: 'Social Media Links',
+    testimonials: 'Testimoni & Ulasan Pembeli (Sweet Stories)',
+    hero: 'Hero Banner Carousel (Top Slides)',
+    terms: 'Syarat & Ketentuan Layanan (T&C)',
+    social: 'Social Media & Quick Links',
+    message: 'Template Pesan Order WhatsApp',
+    profile: 'Profil Toko, Status Buka & Running Ticker',
     settings: 'Pengaturan CMS',
   };
 
@@ -66,8 +74,12 @@ function DashboardContent() {
           {currentTab === 'overview' && <OverviewModule onNavigate={setCurrentTab} />}
           {currentTab === 'products' && <ProductsModule />}
           {currentTab === 'types' && <ProductTypesModule />}
-          {currentTab === 'message' && <CustomerMessageModule />}
+          {currentTab === 'testimonials' && <TestimonialsModule />}
+          {currentTab === 'hero' && <HeroSlidesModule />}
+          {currentTab === 'terms' && <TermsModule />}
           {currentTab === 'social' && <SocialLinksModule />}
+          {currentTab === 'message' && <CustomerMessageModule />}
+          {currentTab === 'profile' && <StoreProfileModule />}
           {currentTab === 'settings' && <SettingsModule />}
         </main>
       </div>
