@@ -11,6 +11,8 @@ import { CustomerMessageModule } from '@/components/modules/CustomerMessageModul
 import { SocialLinksModule } from '@/components/modules/SocialLinksModule';
 import { SettingsModule } from '@/components/modules/SettingsModule';
 import { Sparkles } from 'lucide-react';
+import { isSupabaseConfigured } from '@/lib/supabase';
+import { EnvConfigScreen } from '@/components/ui/EnvConfigScreen';
 
 function DashboardContent() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -74,6 +76,10 @@ function DashboardContent() {
 }
 
 export function App() {
+  if (!isSupabaseConfigured) {
+    return <EnvConfigScreen />;
+  }
+
   return (
     <ToastProvider>
       <AuthProvider>
