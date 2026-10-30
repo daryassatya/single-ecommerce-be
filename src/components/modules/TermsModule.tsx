@@ -23,6 +23,8 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Switch } from '@/components/ui/Switch';
 import { useToast } from '@/components/ui/Toast';
+import { DebouncedSearchInput } from '@/components/ui/DebouncedSearchInput';
+import { Pagination, useResponsivePagination } from '@/components/ui/Pagination';
 import {
   Plus,
   Edit2,
@@ -36,6 +38,7 @@ export function TermsModule() {
   const [terms, setTerms] = useState<TermsAndCondition[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<'apps' | 'robux' | 'mlbb'>('apps');
+  const [search, setSearch] = useState('');
 
   // Dialog State
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -77,9 +80,19 @@ export function TermsModule() {
 
   const currentCategoryTerms = useMemo(() => {
     return terms
-      .filter((t) => t.category === selectedCategory)
+      .filter((t) => t.category === selectedCategory && (!search || t.content.toLowerCase().includes(search.toLowerCase())))
       .sort((a, b) => a.sort_order - b.sort_order);
-  }, [terms, selectedCategory]);
+  }, [terms, selectedCategory, search]);
+
+  // Responsive pagination (10 desktop, 5 mobile)
+  const {
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    totalItems,
+    totalPages,
+    paginatedItems,
+  } = useResponsivePagination(currentCategoryTerms, 10, 5);
 
   const handleOpenCreate = () => {
     setEditingItem(null);
@@ -285,6 +298,15 @@ export function TermsModule() {
         </Button>
       </div>
 
+      {/* Search Bar (800ms) */}
+      <div className="max-w-md">
+        <DebouncedSearchInput
+          placeholder="Cari isi poin aturan T&C... (delay 800ms)"
+          delay={800}
+          onDebouncedChange={setSearch}
+        />
+      </div>
+
       {/* Rules List */}
       {loading ? (
         <div className="space-y-3">
@@ -305,8 +327,9 @@ export function TermsModule() {
           </Button>
         </div>
       ) : (
+        <>
         <div className="space-y-2.5">
-          {currentCategoryTerms.map((item, index) => (
+          {paginatedItems.map((item, index) => (
             <div
               key={item.id}
               className={`p-4 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
@@ -356,6 +379,15 @@ export function TermsModule() {
             </div>
           ))}
         </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          className="rounded-2xl border border-slate-200/80 shadow-2xs mt-4"
+        />
+        </>
       )}
 
       {/* Form Dialog */}

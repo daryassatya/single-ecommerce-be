@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ToastProvider } from '@/components/ui/Toast';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { LoginPage } from '@/components/auth/LoginPage';
@@ -14,6 +14,7 @@ import { HeroSlidesModule } from '@/components/modules/HeroSlidesModule';
 import { TermsModule } from '@/components/modules/TermsModule';
 import { StoreProfileModule } from '@/components/modules/StoreProfileModule';
 import { SettingsModule } from '@/components/modules/SettingsModule';
+import { AccountSettingsModule } from '@/components/modules/AccountSettingsModule';
 import { Sparkles } from 'lucide-react';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { EnvConfigScreen } from '@/components/ui/EnvConfigScreen';
@@ -21,7 +22,15 @@ import { EnvConfigScreen } from '@/components/ui/EnvConfigScreen';
 function DashboardContent() {
   const { isAuthenticated, isLoading } = useAuth();
   const [currentTab, setCurrentTab] = useState<NavTab>('overview');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Default open on desktop, closed on mobile
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  useEffect(() => {
+    // If mobile on initial load, close sidebar
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false);
+    }
+  }, []);
 
   const tabTitles: Record<NavTab, string> = {
     overview: 'Ringkasan & Metrik Toko',
@@ -34,6 +43,7 @@ function DashboardContent() {
     message: 'Template Pesan Order WhatsApp',
     profile: 'Profil Toko, Status Buka & Running Ticker',
     settings: 'Pengaturan CMS',
+    account: 'Pengaturan Akun & Keamanan Admin',
   };
 
   if (isLoading) {
@@ -54,8 +64,8 @@ function DashboardContent() {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50/60 font-sans text-slate-900">
-      {/* Sidebar */}
+    <div className="flex min-h-screen bg-slate-50/60 font-sans text-slate-900 overflow-x-hidden">
+      {/* Sidebar with mobile off-canvas & desktop collapsible mode */}
       <Sidebar
         currentTab={currentTab}
         onTabChange={setCurrentTab}
@@ -64,13 +74,14 @@ function DashboardContent() {
       />
 
       {/* Main Content Area */}
-      <div className="flex flex-1 flex-col min-w-0">
+      <div className="flex flex-1 flex-col min-w-0 transition-all duration-300 w-full overflow-x-hidden">
         <Header
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
           activeTabTitle={tabTitles[currentTab]}
+          onNavigateToAccount={() => setCurrentTab('account')}
         />
 
-        <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-3.5 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto overflow-x-hidden">
           {currentTab === 'overview' && <OverviewModule onNavigate={setCurrentTab} />}
           {currentTab === 'products' && <ProductsModule />}
           {currentTab === 'types' && <ProductTypesModule />}
@@ -81,6 +92,7 @@ function DashboardContent() {
           {currentTab === 'message' && <CustomerMessageModule />}
           {currentTab === 'profile' && <StoreProfileModule />}
           {currentTab === 'settings' && <SettingsModule />}
+          {currentTab === 'account' && <AccountSettingsModule />}
         </main>
       </div>
     </div>

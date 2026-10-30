@@ -19,7 +19,19 @@ import { Switch } from '@/components/ui/Switch';
 import { useToast } from '@/components/ui/Toast';
 import { DynamicIcon } from '@/lib/icons';
 import { formatRupiah } from '@/lib/utils';
-import { Plus, Search, Edit2, Trash2, Package, RefreshCw, Filter, Layers } from 'lucide-react';
+import { DebouncedSearchInput } from '@/components/ui/DebouncedSearchInput';
+import { Pagination, useResponsivePagination } from '@/components/ui/Pagination';
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  Package,
+  RefreshCw,
+  Filter,
+  Layers,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react';
 
 export function ProductsModule() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -27,6 +39,13 @@ export function ProductsModule() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedTypeFilter, setSelectedTypeFilter] = useState<string>('all');
+
+  // Accordion state for mobile view
+  const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
+
+  const toggleAccordion = (id: string) => {
+    setExpandedRows((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   // Form Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -77,6 +96,16 @@ export function ProductsModule() {
       return matchSearch && matchType;
     });
   }, [products, search, selectedTypeFilter]);
+
+  // Responsive pagination (10 on desktop, 5 on mobile)
+  const {
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    totalItems,
+    totalPages,
+    paginatedItems,
+  } = useResponsivePagination(filteredProducts, 10, 5);
 
   const handleCreateOrUpdate = async (input: ProductInput) => {
     try {
@@ -157,246 +186,373 @@ export function ProductsModule() {
 
   return (
     <div className="space-y-6">
-      {/* Header section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      {/* Header & Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
             <Package className="w-6 h-6 text-brand-600" />
-            Manajemen Produk
+            <span>Katalog Produk</span>
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Katalog produk berbasis <strong>Lucide Icons</strong> (tanpa file upload foto) dengan harga dan varian.
+          <p className="text-xs sm:text-sm text-slate-500">
+            Kelola aplikasi premium, varian durasi harga, dan ikon Lucide toko.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 self-start sm:self-auto">
           <Button
+            type="button"
             variant="outline"
-            size="md"
+            size="sm"
             onClick={loadData}
             disabled={loading}
-            title="Refresh Data"
+            className="gap-1.5"
+            title="Muat ulang data dari Supabase"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">Refresh</span>
           </Button>
-
           <Button
-            variant="primary"
-            size="md"
+            type="button"
             onClick={() => {
               setEditingProduct(null);
               setDialogOpen(true);
             }}
+            size="sm"
+            className="gap-1.5 shadow-brand-500/20"
           >
             <Plus className="w-4 h-4" />
-            Tambah Produk
+            <span>Tambah Produk</span>
           </Button>
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-white p-4 shadow-sm border border-slate-200/80">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-1">
-          {/* Search */}
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Cari nama produk, badge..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-4 text-sm text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all"
-            />
-          </div>
-
-          {/* Category Filter */}
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-slate-400 shrink-0" />
-            <select
-              value={selectedTypeFilter}
-              onChange={(e) => setSelectedTypeFilter(e.target.value)}
-              className="h-10 rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs font-medium text-slate-700 focus:bg-white focus:border-brand-500 focus:outline-none"
-            >
-              <option value="all">Semua Kategori</option>
-              {productTypes.map((type) => (
-                <option key={type.id} value={type.id}>
-                  {type.name}
-                </option>
-              ))}
-            </select>
-          </div>
+      {/* Filter and Debounced Search Bar (800ms delay with spinner) */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-2xs">
+        {/* Debounced Search */}
+        <div className="flex-1 max-w-full sm:max-w-md">
+          <DebouncedSearchInput
+            placeholder="Cari nama produk, badge... (delay 800ms)"
+            delay={800}
+            onDebouncedChange={setSearch}
+          />
         </div>
 
-        <div className="text-xs font-medium text-slate-500">
-          Total: <span className="font-semibold text-slate-800">{filteredProducts.length}</span> Produk
+        {/* Category Filter */}
+        <div className="flex items-center gap-2">
+          <Filter className="w-4 h-4 text-slate-400 shrink-0" />
+          <select
+            value={selectedTypeFilter}
+            onChange={(e) => setSelectedTypeFilter(e.target.value)}
+            className="h-10 w-full sm:w-auto rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs font-medium text-slate-700 focus:bg-white focus:border-brand-500 focus:outline-none transition-colors"
+          >
+            <option value="all">Semua Kategori</option>
+            {productTypes.map((type) => (
+              <option key={type.id} value={type.id}>
+                {type.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      {/* Products Table */}
+      {/* Product Content: Desktop Table & Mobile Accordion */}
       <div className="overflow-hidden rounded-2xl bg-white shadow-sm border border-slate-200/80">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-600">
-            <thead className="bg-slate-50/80 border-b border-slate-200/80 text-xs uppercase font-semibold text-slate-500 tracking-wider">
-              <tr>
-                <th className="px-6 py-4">Ikon & Nama Produk</th>
-                <th className="px-6 py-4">Kategori</th>
-                <th className="px-6 py-4">Harga Dasar</th>
-                <th className="px-6 py-4">Varian Paket</th>
-                <th className="px-6 py-4 text-center">Status</th>
-                <th className="px-6 py-4 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-slate-400">
-                    <RefreshCw className="w-6 h-6 animate-spin mx-auto text-brand-500 mb-2" />
-                    Memuat data produk...
-                  </td>
-                </tr>
-              ) : filteredProducts.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-slate-400">
-                    Tidak ada produk yang cocok dengan pencarian.
-                  </td>
-                </tr>
-              ) : (
-                filteredProducts.map((prod) => (
-                  <tr key={prod.id} className="hover:bg-slate-50/60 transition-colors">
-                    {/* Icon & Name */}
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 border border-brand-200/60">
-                          <DynamicIcon name={prod.icon_name || 'Package'} className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-slate-900">{prod.name}</div>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className="text-[11px] font-mono text-slate-400">
-                              lucide:{prod.icon_name}
-                            </span>
-                            {prod.badge && (
-                              <span className="inline-block text-[10px] font-semibold text-brand-600 bg-brand-50 px-1.5 py-0.2 rounded border border-brand-200/50">
-                                {prod.badge}
+        {loading ? (
+          <div className="py-16 text-center text-slate-400">
+            <RefreshCw className="w-6 h-6 animate-spin mx-auto text-brand-500 mb-2" />
+            <span className="text-xs font-semibold">Memuat data produk...</span>
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="py-16 text-center text-slate-400">
+            <Package className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+            <p className="text-xs font-semibold">Tidak ada produk yang cocok dengan pencarian.</p>
+          </div>
+        ) : (
+          <>
+            {/* 1. DESKTOP TABLE VIEW (Visible on md and up) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-sm text-slate-600">
+                <thead className="bg-slate-50/80 border-b border-slate-200/80 text-xs uppercase font-semibold text-slate-500 tracking-wider">
+                  <tr>
+                    <th className="px-6 py-4">Ikon & Nama Produk</th>
+                    <th className="px-6 py-4">Kategori</th>
+                    <th className="px-6 py-4">Harga Dasar</th>
+                    <th className="px-6 py-4">Varian Paket</th>
+                    <th className="px-6 py-4 text-center">Status</th>
+                    <th className="px-6 py-4 text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {paginatedItems.map((prod) => (
+                    <tr key={prod.id} className="hover:bg-slate-50/60 transition-colors">
+                      {/* Icon & Name */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 border border-brand-200/60">
+                            <DynamicIcon name={prod.icon_name || 'Package'} className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-slate-900">{prod.name}</div>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              <span className="text-[11px] font-mono text-slate-400">
+                                lucide:{prod.icon_name}
                               </span>
-                            )}
+                              {prod.badge && (
+                                <span className="inline-block text-[10px] font-semibold text-brand-600 bg-brand-50 px-1.5 py-0.2 rounded border border-brand-200/50">
+                                  {prod.badge}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    {/* Kategori */}
-                    <td className="px-6 py-4">
-                      <Badge variant="slate">
-                        {prod.product_types?.name || 'Tanpa Kategori'}
-                      </Badge>
-                    </td>
+                      {/* Kategori */}
+                      <td className="px-6 py-4">
+                        <Badge variant="slate">
+                          {prod.product_types?.name || 'Tanpa Kategori'}
+                        </Badge>
+                      </td>
 
-                    {/* Harga */}
-                    <td className="px-6 py-4 font-semibold text-slate-800">
-                      {prod.has_variants ? (
-                        <div>
-                          <span className="text-[10px] text-brand-600 block font-mono">
-                            Mulai dari
-                          </span>
-                          <span className="text-brand-700">{formatRupiah(prod.price)}</span>
-                        </div>
-                      ) : (
-                        formatRupiah(prod.base_price ?? prod.price)
-                      )}
-                    </td>
+                      {/* Harga */}
+                      <td className="px-6 py-4 font-semibold text-slate-800">
+                        {prod.has_variants ? (
+                          <div>
+                            <span className="text-[10px] text-brand-600 block font-mono">
+                              Mulai dari
+                            </span>
+                            <span className="text-brand-700">{formatRupiah(prod.price)}</span>
+                          </div>
+                        ) : (
+                          formatRupiah(prod.base_price ?? prod.price)
+                        )}
+                      </td>
 
-                    {/* Varian */}
-                    <td className="px-6 py-4 max-w-xs">
-                      {prod.has_variants && prod.variant_types && prod.variant_types.length > 0 ? (
-                        <div className="space-y-1">
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-brand-700 bg-brand-50 border border-brand-200/60 px-2 py-0.5 rounded-md">
-                            <Layers className="w-3 h-3 text-brand-500" />
-                            {prod.variant_types.length} Jenis Berjenjang
-                          </span>
+                      {/* Varian */}
+                      <td className="px-6 py-4 max-w-xs">
+                        {prod.has_variants && prod.variant_types && prod.variant_types.length > 0 ? (
+                          <div className="space-y-1">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-brand-700 bg-brand-50 border border-brand-200/60 px-2 py-0.5 rounded-md">
+                              <Layers className="w-3 h-3 text-brand-500" />
+                              {prod.variant_types.length} Jenis Berjenjang
+                            </span>
+                            <div className="flex flex-wrap gap-1">
+                              {prod.variant_types.slice(0, 3).map((vt, i) => (
+                                <span
+                                  key={i}
+                                  className="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md border border-slate-200/50"
+                                >
+                                  {vt.name} ({(vt.options || vt.product_variant_options || []).length})
+                                </span>
+                              ))}
+                              {prod.variant_types.length > 3 && (
+                                <span className="text-[10px] text-slate-400 self-center">
+                                  +{prod.variant_types.length - 3} lainnya
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ) : prod.variants && prod.variants.length > 0 ? (
                           <div className="flex flex-wrap gap-1">
-                            {prod.variant_types.slice(0, 3).map((vt, i) => (
+                            {prod.variants.slice(0, 3).map((v, i) => (
                               <span
                                 key={i}
-                                className="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md border border-slate-200/50"
+                                className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md"
                               >
-                                {vt.name} ({(vt.options || vt.product_variant_options || []).length})
+                                {v}
                               </span>
                             ))}
-                            {prod.variant_types.length > 3 && (
+                            {prod.variants.length > 3 && (
                               <span className="text-[10px] text-slate-400 self-center">
-                                +{prod.variant_types.length - 3} lainnya
+                                +{prod.variants.length - 3} lainnya
                               </span>
                             )}
                           </div>
+                        ) : (
+                          <span className="text-xs text-slate-400">-</span>
+                        )}
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-6 py-4 text-center">
+                        <div className="inline-flex items-center gap-2">
+                          <Switch
+                            checked={prod.is_active}
+                            onCheckedChange={() => handleToggleActive(prod)}
+                          />
+                          <Badge variant={prod.is_active ? 'success' : 'slate'}>
+                            {prod.is_active ? 'Aktif' : 'Nonaktif'}
+                          </Badge>
                         </div>
-                      ) : prod.variants && prod.variants.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
-                          {prod.variants.slice(0, 3).map((v, i) => (
-                            <span
-                              key={i}
-                              className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md"
-                            >
-                              {v}
+                      </td>
+
+                      {/* Aksi */}
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingProduct(prod);
+                              setDialogOpen(true);
+                            }}
+                            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-brand-600 transition-colors"
+                            title="Ubah Produk"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setDeleteId(prod.id)}
+                            className="rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                            title="Hapus Produk"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* 2. MOBILE & TABLET ACCORDION VIEW (Prevents horizontal overflow) */}
+            <div className="block md:hidden divide-y divide-slate-100">
+              {paginatedItems.map((prod) => {
+                const isExpanded = !!expandedRows[prod.id];
+                return (
+                  <div key={prod.id} className="p-3.5 transition-colors hover:bg-slate-50/50">
+                    {/* Collapsed Header Bar (Tap to toggle) */}
+                    <div
+                      onClick={() => toggleAccordion(prod.id)}
+                      className="flex items-center justify-between gap-3 cursor-pointer select-none"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 border border-brand-200/60 shadow-2xs">
+                          <DynamicIcon name={prod.icon_name || 'Package'} className="h-5 w-5" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-bold text-xs text-slate-900 truncate">{prod.name}</p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-[10px] text-slate-500 font-medium truncate">
+                              {prod.product_types?.name || 'Umum'}
                             </span>
-                          ))}
-                          {prod.variants.length > 3 && (
-                            <span className="text-[10px] text-slate-400 self-center">
-                              +{prod.variants.length - 3} lainnya
+                            <span className="text-[10px] font-bold text-brand-700">
+                              {prod.has_variants ? `Mulai ${formatRupiah(prod.price)}` : formatRupiah(prod.base_price ?? prod.price)}
                             </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Badge variant={prod.is_active ? 'success' : 'slate'} className="text-[10px] px-1.5 py-0.5">
+                          {prod.is_active ? 'Aktif' : 'Off'}
+                        </Badge>
+                        <div className="p-1 rounded-lg text-slate-400 hover:text-slate-600 bg-slate-100">
+                          {isExpanded ? (
+                            <ChevronUp className="w-4 h-4" />
+                          ) : (
+                            <ChevronDown className="w-4 h-4" />
                           )}
                         </div>
-                      ) : (
-                        <span className="text-xs text-slate-400">-</span>
-                      )}
-                    </td>
-
-                    {/* Status */}
-                    <td className="px-6 py-4 text-center">
-                      <div className="inline-flex items-center gap-2">
-                        <Switch
-                          checked={prod.is_active}
-                          onCheckedChange={() => handleToggleActive(prod)}
-                        />
-                        <Badge variant={prod.is_active ? 'success' : 'slate'}>
-                          {prod.is_active ? 'Aktif' : 'Nonaktif'}
-                        </Badge>
                       </div>
-                    </td>
+                    </div>
 
-                    {/* Aksi */}
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditingProduct(prod);
-                            setDialogOpen(true);
-                          }}
-                          className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-brand-600 transition-colors"
-                          title="Ubah Produk"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeleteId(prod.id)}
-                          className="rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-colors"
-                          title="Hapus Produk"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                    {/* Expanded Detail Drawer */}
+                    {isExpanded && (
+                      <div className="mt-3.5 pt-3 border-t border-slate-100 space-y-3 text-xs bg-slate-50/60 p-3 rounded-xl animate-in fade-in duration-200">
+                        {/* Badges & Description */}
+                        {prod.badge && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-slate-400 text-[11px]">Badge:</span>
+                            <span className="text-[10px] font-semibold text-brand-700 bg-brand-100/70 px-2 py-0.5 rounded-full">
+                              {prod.badge}
+                            </span>
+                          </div>
+                        )}
+
+                        {prod.description && (
+                          <div>
+                            <span className="text-slate-400 text-[11px] block">Deskripsi:</span>
+                            <p className="text-slate-600 text-xs mt-0.5">{prod.description}</p>
+                          </div>
+                        )}
+
+                        {/* Variants */}
+                        {prod.has_variants && prod.variant_types && prod.variant_types.length > 0 && (
+                          <div>
+                            <span className="text-slate-400 text-[11px] block mb-1">
+                              Varian Paket ({prod.variant_types.length} jenis):
+                            </span>
+                            <div className="flex flex-wrap gap-1">
+                              {prod.variant_types.map((vt, i) => (
+                                <span
+                                  key={i}
+                                  className="text-[10px] bg-white border border-slate-200 text-slate-700 px-2 py-0.5 rounded-md"
+                                >
+                                  {vt.name} ({(vt.options || vt.product_variant_options || []).length} opsi)
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Status Toggle & Actions */}
+                        <div className="flex items-center justify-between pt-2 border-t border-slate-200/60">
+                          <div className="flex items-center gap-2">
+                            <span className="text-slate-500 font-semibold text-[11px]">Status Tayang:</span>
+                            <Switch
+                              checked={prod.is_active}
+                              onCheckedChange={() => handleToggleActive(prod)}
+                            />
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setEditingProduct(prod);
+                                setDialogOpen(true);
+                              }}
+                              className="h-8 gap-1 text-xs"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                              <span>Edit</span>
+                            </Button>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="danger"
+                              onClick={() => setDeleteId(prod.id)}
+                              className="h-8 gap-1 text-xs"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              <span>Hapus</span>
+                            </Button>
+                          </div>
+                        </div>
                       </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Pagination Controls (10 desktop, 5 mobile) */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              pageSize={pageSize}
+              onPageChange={setCurrentPage}
+            />
+          </>
+        )}
       </div>
 
-      {/* Form Dialog */}
+      {/* Product Form Dialog */}
       <ProductFormDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
@@ -406,25 +562,23 @@ export function ProductsModule() {
         isLoading={submitting}
       />
 
-      {/* Delete Confirmation Alert Dialog */}
+      {/* Delete Confirmation Alert */}
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Hapus Produk?</AlertDialogTitle>
+            <AlertDialogTitle>Hapus Produk Ini?</AlertDialogTitle>
             <AlertDialogDescription>
-              Apakah Anda yakin ingin menghapus produk ini dari katalog toko? Data yang telah dihapus tidak dapat dipulihkan.
+              Tindakan ini permanen. Produk yang dihapus tidak akan lagi muncul di katalog toko frontend.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel asChild>
-              <Button variant="outline" disabled={deleting}>
-                Batal
-              </Button>
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button variant="danger" onClick={handleDelete} isLoading={deleting}>
-                Ya, Hapus
-              </Button>
+            <AlertDialogCancel disabled={deleting}>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleting}
+              className="bg-rose-600 hover:bg-rose-700 text-white"
+            >
+              {deleting ? 'Menghapus...' : 'Ya, Hapus'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

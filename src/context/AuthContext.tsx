@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { adminAccountsService } from '@/services/adminAccountsService';
 
-interface AdminUser {
+export interface AdminUser {
   email: string;
   name: string;
   role: string;
@@ -13,13 +14,17 @@ interface AuthContextType {
   login: (email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   isLoading: boolean;
+  updateUserSession: (user: AdminUser) => void;
+  updateCredentials: (params: {
+    currentEmail: string;
+    currentPassword: string;
+    newEmail?: string;
+    newPassword?: string;
+    newName?: string;
+  }) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AUTH_STORAGE_KEY = 'syafira_admin_session_v1';
-
-// Admin credentials
-const ADMIN_EMAIL = 'prabandarisyafira@gmail.com';
-const ADMIN_PASSWORD = '@syafira123';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -50,18 +55,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const cleanEmail = emailInput.trim().toLowerCase();
     const cleanPassword = passwordInput.trim();
 
-    // Check credentials against admin credentials
-    const matchesAdmin =
-      cleanEmail === ADMIN_EMAIL.toLowerCase() && cleanPassword === ADMIN_PASSWORD;
+    // 1. Verify via adminAccountsService (supports Supabase admin_accounts & seeded accounts)
+    const adminAcc = await adminAccountsService.verifyLogin(cleanEmail, cleanPassword);
 
-    if (matchesAdmin) {
+    if (adminAcc) {
       const adminData: AdminUser = {
-        email: ADMIN_EMAIL,
-        name: 'Syafira Prabandari',
-        role: 'Super Admin',
+        email: adminAcc.email,
+        name: adminAcc.name,
+        role: adminAcc.role || 'Super Admin',
       };
 
-      // Also try signing in to Supabase Auth silently in the background
+      // Also try signing in to Supabase Auth silently in the background if possible
       try {
         await supabase.auth.signInWithPassword({
           email: cleanEmail,
@@ -77,7 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { success: true };
     }
 
-    // Try Supabase auth fallback
+    // 2. Try standard Supabase auth fallback
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
@@ -88,7 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const userData: AdminUser = {
           email: data.user.email || cleanEmail,
           name: data.user.user_metadata?.full_name || 'Admin',
-          role: 'Administrator',
+          role: 'Super Admin',
         };
         setIsAuthenticated(true);
         setUser(userData);
@@ -116,6 +120,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem(AUTH_STORAGE_KEY);
   };
 
+  const updateUserSession = (updatedUser: AdminUser) => {
+    setUser(updatedUser);
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(updatedUser));
+  };
+
+  const updateCredentials = async (params: {
+    currentEmail: string;
+    currentPassword: string;
+    newEmail?: string;
+    newPassword?: string;
+    newName?: string;
+  }) => {
+    const res = await adminAccountsService.updateCredentials(params);
+    if (res.success && res.updatedUser) {
+      updateUserSession(res.updatedUser);
+      return { success: true };
+    }
+    return { success: false, error: res.error || 'Gagal mengubah data akun' };
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -124,6 +148,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         logout,
         isLoading,
+        updateUserSession,
+        updateCredentials,
       }}
     >
       {children}
