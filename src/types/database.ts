@@ -8,11 +8,48 @@ export interface ProductType {
   updated_at: string;
 }
 
+export interface ProductVariantOption {
+  id: string;
+  variant_type_id: string;
+  label: string;
+  price: number;
+  is_available: boolean;
+  sort_order: number;
+  created_at?: string;
+}
+
+export interface ProductVariantType {
+  id: string;
+  product_id: string;
+  name: string;
+  sort_order: number;
+  created_at?: string;
+  options?: ProductVariantOption[];
+  product_variant_options?: ProductVariantOption[];
+}
+
+export interface ProductVariantOptionInput {
+  id?: string;
+  label: string;
+  price: number;
+  is_available: boolean;
+  sort_order?: number;
+}
+
+export interface ProductVariantTypeInput {
+  id?: string;
+  name: string;
+  sort_order?: number;
+  options: ProductVariantOptionInput[];
+}
+
 export interface Product {
   id: string;
   type_id: string | null;
   name: string;
   price: number;
+  base_price?: number | null;
+  has_variants: boolean;
   badge: string | null;
   icon_name: string;
   variants: string[];
@@ -21,6 +58,8 @@ export interface Product {
   created_at: string;
   updated_at: string;
   product_types?: ProductType | null; // From relation join
+  product_variant_types?: ProductVariantType[];
+  variant_types?: ProductVariantType[];
 }
 
 export interface CustomerMessageSetting {
@@ -92,7 +131,9 @@ export interface StoreProfile {
 
 // Form payloads
 export type ProductTypeInput = Omit<ProductType, 'id' | 'created_at' | 'updated_at'>;
-export type ProductInput = Omit<Product, 'id' | 'created_at' | 'updated_at' | 'product_types'>;
+export type ProductInput = Omit<Product, 'id' | 'created_at' | 'updated_at' | 'product_types' | 'product_variant_types' | 'variant_types'> & {
+  variant_types?: ProductVariantTypeInput[];
+};
 export type SocialMediaLinkInput = Omit<SocialMediaLink, 'id' | 'created_at'>;
 export type TestimonialInput = Omit<Testimonial, 'id' | 'created_at'>;
 export type HeroSlideInput = Omit<HeroSlide, 'id' | 'created_at'>;

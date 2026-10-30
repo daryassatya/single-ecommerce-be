@@ -19,7 +19,7 @@ import { Switch } from '@/components/ui/Switch';
 import { useToast } from '@/components/ui/Toast';
 import { DynamicIcon } from '@/lib/icons';
 import { formatRupiah } from '@/lib/utils';
-import { Plus, Search, Edit2, Trash2, Package, RefreshCw, Filter } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Package, RefreshCw, Filter, Layers } from 'lucide-react';
 
 export function ProductsModule() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -294,12 +294,43 @@ export function ProductsModule() {
 
                     {/* Harga */}
                     <td className="px-6 py-4 font-semibold text-slate-800">
-                      {formatRupiah(prod.price)}
+                      {prod.has_variants ? (
+                        <div>
+                          <span className="text-[10px] text-brand-600 block font-mono">
+                            Mulai dari
+                          </span>
+                          <span className="text-brand-700">{formatRupiah(prod.price)}</span>
+                        </div>
+                      ) : (
+                        formatRupiah(prod.base_price ?? prod.price)
+                      )}
                     </td>
 
                     {/* Varian */}
                     <td className="px-6 py-4 max-w-xs">
-                      {prod.variants && prod.variants.length > 0 ? (
+                      {prod.has_variants && prod.variant_types && prod.variant_types.length > 0 ? (
+                        <div className="space-y-1">
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-brand-700 bg-brand-50 border border-brand-200/60 px-2 py-0.5 rounded-md">
+                            <Layers className="w-3 h-3 text-brand-500" />
+                            {prod.variant_types.length} Jenis Berjenjang
+                          </span>
+                          <div className="flex flex-wrap gap-1">
+                            {prod.variant_types.slice(0, 3).map((vt, i) => (
+                              <span
+                                key={i}
+                                className="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md border border-slate-200/50"
+                              >
+                                {vt.name} ({(vt.options || vt.product_variant_options || []).length})
+                              </span>
+                            ))}
+                            {prod.variant_types.length > 3 && (
+                              <span className="text-[10px] text-slate-400 self-center">
+                                +{prod.variant_types.length - 3} lainnya
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ) : prod.variants && prod.variants.length > 0 ? (
                         <div className="flex flex-wrap gap-1">
                           {prod.variants.slice(0, 3).map((v, i) => (
                             <span

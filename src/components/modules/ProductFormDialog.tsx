@@ -17,8 +17,8 @@ import {
 import { Button } from '@/components/ui/Button';
 import { Switch } from '@/components/ui/Switch';
 import { IconPicker } from '@/components/ui/IconPicker';
-import { Product, ProductInput, ProductType } from '@/types/database';
-import { Plus, X } from 'lucide-react';
+import { Product, ProductInput, ProductType, ProductVariantTypeInput } from '@/types/database';
+import { Plus, Trash2, Layers, CheckCircle2 } from 'lucide-react';
 
 interface ProductFormDialogProps {
   open: boolean;
@@ -43,21 +43,59 @@ export function ProductFormDialog({
   const [badge, setBadge] = useState('');
   const [iconName, setIconName] = useState('Package');
   const [description, setDescription] = useState('');
-  const [variants, setVariants] = useState<string[]>([]);
-  const [newVariant, setNewVariant] = useState('');
   const [isActive, setIsActive] = useState(true);
+
+  // 2-Tier Nested Variant States
+  const [hasVariants, setHasVariants] = useState<boolean>(false);
+  const [variantTypes, setVariantTypes] = useState<ProductVariantTypeInput[]>([]);
+
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (initialData) {
       setName(initialData.name);
       setTypeId(initialData.type_id || 'none');
-      setPrice(initialData.price);
+      setPrice(initialData.base_price ?? initialData.price ?? 0);
       setBadge(initialData.badge || '');
       setIconName(initialData.icon_name || 'Package');
       setDescription(initialData.description || '');
-      setVariants(initialData.variants || []);
       setIsActive(initialData.is_active);
+
+      const hasVars = Boolean(
+        initialData.has_variants || 
+        (initialData.variant_types && initialData.variant_types.length > 0)
+      );
+      setHasVariants(hasVars);
+
+      if (initialData.variant_types && initialData.variant_types.length > 0) {
+        setVariantTypes(
+          initialData.variant_types.map((vt) => ({
+            id: vt.id,
+            name: vt.name,
+            sort_order: vt.sort_order,
+            options: (vt.options || vt.product_variant_options || []).map((opt) => ({
+              id: opt.id,
+              label: opt.label,
+              price: Number(opt.price || 0),
+              is_available: opt.is_available ?? true,
+              sort_order: opt.sort_order ?? 0,
+            })),
+          }))
+        );
+      } else if (initialData.variants && initialData.variants.length > 0) {
+        // Convert legacy flat variants to default 2-tier structure if desired
+        setVariantTypes(
+          initialData.variants.map((v, idx) => ({
+            name: v,
+            sort_order: idx + 1,
+            options: [
+              { label: 'Standard', price: initialData.price || 0, is_available: true, sort_order: 1 }
+            ]
+          }))
+        );
+      } else {
+        setVariantTypes([]);
+      }
     } else {
       setName('');
       setTypeId(productTypes[0]?.id || 'none');
@@ -65,30 +103,111 @@ export function ProductFormDialog({
       setBadge('');
       setIconName('Package');
       setDescription('');
-      setVariants([]);
       setIsActive(true);
+      setHasVariants(false);
+      setVariantTypes([]);
     }
-    setNewVariant('');
     setErrors({});
   }, [initialData, open, productTypes]);
 
-  const handleAddVariant = () => {
-    const trimmed = newVariant.trim();
-    if (trimmed && !variants.includes(trimmed)) {
-      setVariants([...variants, trimmed]);
-      setNewVariant('');
-    }
+  // Nested Variant Handlers
+  const handleAddVariantType = () => {
+    setVariantTypes([
+      ...variantTypes,
+      {
+        name: '',
+        sort_order: variantTypes.length + 1,
+        options: [
+          { label: '1 Bulan', price: price || 50000, is_available: true, sort_order: 1 },
+        ],
+      },
+    ]);
   };
 
-  const handleRemoveVariant = (index: number) => {
-    setVariants(variants.filter((_, i) => i !== index));
+  const handleRemoveVariantType = (typeIndex: number) => {
+    setVariantTypes(variantTypes.filter((_, i) => i !== typeIndex));
+  };
+
+  const handleUpdateTypeName = (typeIndex: number, newName: string) => {
+    const updated = [...variantTypes];
+    updated[typeIndex] = { ...updated[typeIndex], name: newName };
+    setVariantTypes(updated);
+  };
+
+  const handleAddOption = (typeIndex: number) => {
+    const updated = [...variantTypes];
+    const currentOptions = updated[typeIndex].options || [];
+    updated[typeIndex] = {
+      ...updated[typeIndex],
+      options: [
+        ...currentOptions,
+        {
+          label: '',
+          price: 0,
+          is_available: true,
+          sort_order: currentOptions.length + 1,
+        },
+      ],
+    };
+    setVariantTypes(updated);
+  };
+
+  const handleRemoveOption = (typeIndex: number, optIndex: number) => {
+    const updated = [...variantTypes];
+    updated[typeIndex] = {
+      ...updated[typeIndex],
+      options: updated[typeIndex].options.filter((_, i) => i !== optIndex),
+    };
+    setVariantTypes(updated);
+  };
+
+  const handleUpdateOption = (
+    typeIndex: number,
+    optIndex: number,
+    field: 'label' | 'price' | 'is_available',
+    value: any
+  ) => {
+    const updated = [...variantTypes];
+    const targetOpt = { ...updated[typeIndex].options[optIndex], [field]: value };
+    const newOptions = [...updated[typeIndex].options];
+    newOptions[optIndex] = targetOpt;
+    updated[typeIndex] = { ...updated[typeIndex], options: newOptions };
+    setVariantTypes(updated);
   };
 
   const validate = () => {
     const errs: Record<string, string> = {};
     if (!name.trim()) errs.name = 'Nama produk wajib diisi';
-    if (price < 0) errs.price = 'Harga tidak boleh negatif';
     if (!iconName.trim()) errs.iconName = 'Pilih ikon produk';
+
+    if (!hasVariants) {
+      if (price < 0) errs.price = 'Harga tidak boleh negatif';
+    } else {
+      if (variantTypes.length === 0) {
+        errs.variants = 'Tambahkan minimal 1 Jenis Varian (Level 1)';
+      } else {
+        for (let i = 0; i < variantTypes.length; i++) {
+          const vt = variantTypes[i];
+          if (!vt.name.trim()) {
+            errs[`type_${i}`] = `Nama Jenis Varian #${i + 1} wajib diisi (misal: Plus, Pro, Ultra)`;
+          }
+          if (!vt.options || vt.options.length === 0) {
+            errs[`type_options_${i}`] = `Jenis Varian "${vt.name || '#' + (i + 1)}" wajib memiliki minimal 1 opsi durasi/harga`;
+          } else {
+            for (let j = 0; j < vt.options.length; j++) {
+              const opt = vt.options[j];
+              if (!opt.label.trim()) {
+                errs[`opt_label_${i}_${j}`] = `Label opsi wajib diisi (misal: 1 Bulan)`;
+              }
+              if (opt.price < 0) {
+                errs[`opt_price_${i}_${j}`] = `Harga opsi tidak boleh negatif`;
+              }
+            }
+          }
+        }
+      }
+    }
+
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -97,30 +216,48 @@ export function ProductFormDialog({
     e.preventDefault();
     if (!validate()) return;
 
+    // Calculate display price
+    let finalBasePrice: number | null = Number(price);
+    let finalDisplayPrice: number = Number(price);
+
+    if (hasVariants) {
+      finalBasePrice = null;
+      const allPrices: number[] = [];
+      variantTypes.forEach((vt) => {
+        vt.options.forEach((opt) => allPrices.push(Number(opt.price)));
+      });
+      if (allPrices.length > 0) {
+        finalDisplayPrice = Math.min(...allPrices);
+      }
+    }
+
     await onSubmit({
       name: name.trim(),
       type_id: typeId === 'none' ? null : typeId,
-      price: Number(price),
+      price: finalDisplayPrice,
+      base_price: finalBasePrice,
+      has_variants: hasVariants,
       badge: badge.trim() || null,
       icon_name: iconName.trim(),
-      variants: variants,
+      variants: hasVariants ? variantTypes.map((vt) => vt.name) : [],
       description: description.trim() || null,
       is_active: isActive,
+      variant_types: hasVariants ? variantTypes : [],
     });
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xl">
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[92vh] flex flex-col p-0 overflow-hidden">
+        <form onSubmit={handleSubmit} className="flex flex-col h-full overflow-hidden">
+          <DialogHeader className="p-6 pb-3 border-b border-slate-100">
             <DialogTitle>{initialData ? 'Ubah Produk' : 'Tambah Produk Baru'}</DialogTitle>
             <DialogDescription>
-              Produk menggunakan <strong>Lucide Icon</strong> sebagai identitas visual tanpa upload gambar.
+              Atur detail produk, kategori, ikon visual, dan arsitektur varian berjenjang 2 tingkat (Parent-Child).
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-2 max-h-[70vh] overflow-y-auto pr-1">
+          <div className="space-y-4 p-6 py-4 overflow-y-auto flex-1 pr-3">
             {/* Nama Produk */}
             <div>
               <label className="text-xs font-semibold text-slate-700">
@@ -128,10 +265,10 @@ export function ProductFormDialog({
               </label>
               <input
                 type="text"
-                placeholder="Contoh: Netflix Premium, Robux Roblox, Canva Pro"
+                placeholder="Contoh: Google Gemini Subscription, Netflix Premium, Mobile Legends"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="mt-1 h-11 w-full rounded-xl border border-slate-200 px-3.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                className="mt-1 h-10 w-full rounded-xl border border-slate-200 px-3.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
               />
               {errors.name && <p className="mt-1 text-xs text-rose-500">{errors.name}</p>}
             </div>
@@ -157,7 +294,6 @@ export function ProductFormDialog({
                 </Select>
               </div>
 
-              {/* Lucide Icon Picker Component */}
               <div>
                 <IconPicker
                   label="Ikon Produk (Lucide)"
@@ -168,78 +304,233 @@ export function ProductFormDialog({
               </div>
             </div>
 
-            {/* Grid 2 Kolom: Harga & Badge */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs font-semibold text-slate-700">
-                  Harga Dasar (Rp) <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  step="500"
-                  placeholder="0"
-                  value={price}
-                  onChange={(e) => setPrice(Number(e.target.value))}
-                  className="mt-1 h-11 w-full rounded-xl border border-slate-200 px-3.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-                />
-                {errors.price && <p className="mt-1 text-xs text-rose-500">{errors.price}</p>}
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-slate-700">Badge Label (Opsional)</label>
-                <input
-                  type="text"
-                  placeholder="Contoh: AI · 5 varian, Promo, Best Seller"
-                  value={badge}
-                  onChange={(e) => setBadge(e.target.value)}
-                  className="mt-1 h-11 w-full rounded-xl border border-slate-200 px-3.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-                />
-              </div>
+            {/* Badge Label */}
+            <div>
+              <label className="text-xs font-semibold text-slate-700">Badge Label (Opsional)</label>
+              <input
+                type="text"
+                placeholder="Contoh: AI · 3 Tipe, Promo, Best Seller, Top-Up Kilat"
+                value={badge}
+                onChange={(e) => setBadge(e.target.value)}
+                className="mt-1 h-10 w-full rounded-xl border border-slate-200 px-3.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+              />
             </div>
 
-            {/* Varian Produk */}
-            <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">
-                Daftar Varian Produk (Paket / Opsi Durasi)
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Ketik varian, misal: 1 Bulan, 100 Robux..."
-                  value={newVariant}
-                  onChange={(e) => setNewVariant(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddVariant();
-                    }
-                  }}
-                  className="h-10 flex-1 rounded-xl border border-slate-200 px-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+            {/* TOGGLE: ARSITEKTUR VARIAN BERJENJANG (PARENT-CHILD) */}
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-1.5 font-semibold text-sm text-slate-900">
+                    <Layers className="w-4 h-4 text-brand-600" />
+                    <span>Gunakan Varian Berjenjang 2 Tingkat (Parent–Child)</span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Aktifkan jika produk memiliki pilihan Jenis/Tier (Parent) dan Opsi Durasi/Harga (Child).
+                  </p>
+                </div>
+                <Switch
+                  checked={hasVariants}
+                  onCheckedChange={(checked) => setHasVariants(checked)}
                 />
-                <Button type="button" variant="secondary" size="sm" onClick={handleAddVariant}>
-                  <Plus className="w-4 h-4" />
-                  Tambah
-                </Button>
               </div>
 
-              {variants.length > 0 && (
-                <div className="mt-2.5 flex flex-wrap gap-1.5 p-2 rounded-xl bg-slate-50 border border-slate-100">
-                  {variants.map((v, i) => (
-                    <span
-                      key={i}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs font-medium text-slate-700 shadow-2xs"
+              {/* TAMPILAN JIKA TIDAK ADA VARIAN: HARGA DASAR TUNGGAL */}
+              {!hasVariants ? (
+                <div className="pt-2 border-t border-slate-200/60">
+                  <label className="text-xs font-semibold text-slate-700">
+                    Harga Produk (Rp) <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="500"
+                    placeholder="0"
+                    value={price}
+                    onChange={(e) => setPrice(Number(e.target.value))}
+                    className="mt-1 h-10 w-full sm:w-64 rounded-xl border border-slate-200 px-3.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 bg-white"
+                  />
+                  {errors.price && <p className="mt-1 text-xs text-rose-500">{errors.price}</p>}
+                </div>
+              ) : (
+                /* TAMPILAN BUILDER VARIAN BERJENJANG 2 TINGKAT */
+                <div className="pt-3 border-t border-slate-200/80 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-xs font-bold uppercase tracking-wider text-brand-700 font-mono">
+                        LEVEL 1: JENIS / PAKET VARIAN (PARENT)
+                      </span>
+                      <p className="text-[11px] text-slate-500">
+                        Contoh: Gemini AI Plus, Gemini AI Pro, Gemini AI Ultra
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="secondary"
+                      onClick={handleAddVariantType}
+                      className="text-xs h-8 gap-1.5"
                     >
-                      {v}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveVariant(i)}
-                        className="text-slate-400 hover:text-rose-500 transition-colors"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  ))}
+                      <Plus className="w-3.5 h-3.5" />
+                      Tambah Jenis Varian
+                    </Button>
+                  </div>
+
+                  {errors.variants && (
+                    <p className="text-xs text-rose-500 font-medium">{errors.variants}</p>
+                  )}
+
+                  {variantTypes.length === 0 ? (
+                    <div className="p-4 text-center rounded-xl bg-white border border-dashed border-slate-300 text-xs text-slate-400">
+                      Belum ada jenis varian. Klik tombol <strong>&quot;Tambah Jenis Varian&quot;</strong> di atas.
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {variantTypes.map((vt, typeIdx) => (
+                        <div
+                          key={typeIdx}
+                          className="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-2xs space-y-3"
+                        >
+                          {/* Header Level 1: Nama Jenis & Tombol Hapus */}
+                          <div className="flex items-start gap-2 justify-between">
+                            <div className="flex-1">
+                              <label className="text-[11px] font-semibold text-slate-600 block mb-1">
+                                Jenis Varian #{typeIdx + 1} (Parent) <span className="text-rose-500">*</span>
+                              </label>
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="text"
+                                  placeholder="Contoh: Gemini AI Plus / Gemini AI Pro"
+                                  value={vt.name}
+                                  onChange={(e) => handleUpdateTypeName(typeIdx, e.target.value)}
+                                  className="h-9 w-full rounded-lg border border-slate-200 px-3 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleRemoveVariantType(typeIdx)}
+                                  className="text-slate-400 hover:text-rose-500 h-9 px-2"
+                                  title="Hapus Jenis Varian ini"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                              {errors[`type_${typeIdx}`] && (
+                                <p className="mt-1 text-[11px] text-rose-500">
+                                  {errors[`type_${typeIdx}`]}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* LEVEL 2: OPSI DURASI & HARGA (CHILD) */}
+                          <div className="pl-3 border-l-2 border-brand-200 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">
+                                Level 2: Opsi Durasi &amp; Harga Akhir (Child)
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => handleAddOption(typeIdx)}
+                                className="text-[11px] text-brand-600 hover:text-brand-700 font-semibold inline-flex items-center gap-1"
+                              >
+                                <Plus className="w-3 h-3" />
+                                <span>Tambah Opsi</span>
+                              </button>
+                            </div>
+
+                            {errors[`type_options_${typeIdx}`] && (
+                              <p className="text-[11px] text-rose-500">
+                                {errors[`type_options_${typeIdx}`]}
+                              </p>
+                            )}
+
+                            {vt.options && vt.options.length > 0 ? (
+                              <div className="space-y-2">
+                                {vt.options.map((opt, optIdx) => (
+                                  <div
+                                    key={optIdx}
+                                    className="flex items-center gap-2 bg-slate-50/80 p-2 rounded-lg border border-slate-100"
+                                  >
+                                    {/* Label Opsi */}
+                                    <div className="flex-1">
+                                      <input
+                                        type="text"
+                                        placeholder="Label (1 Bulan / 1 Tahun)"
+                                        value={opt.label}
+                                        onChange={(e) =>
+                                          handleUpdateOption(typeIdx, optIdx, 'label', e.target.value)
+                                        }
+                                        className="h-8 w-full rounded-md border border-slate-200 px-2.5 text-xs text-slate-800 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none bg-white"
+                                      />
+                                      {errors[`opt_label_${typeIdx}_${optIdx}`] && (
+                                        <p className="text-[10px] text-rose-500 mt-0.5">
+                                          {errors[`opt_label_${typeIdx}_${optIdx}`]}
+                                        </p>
+                                      )}
+                                    </div>
+
+                                    {/* Harga Opsi (Final Price) */}
+                                    <div className="w-32">
+                                      <div className="relative">
+                                        <span className="absolute left-2 top-2 text-[10px] font-mono text-slate-400">
+                                          Rp
+                                        </span>
+                                        <input
+                                          type="number"
+                                          min="0"
+                                          step="500"
+                                          placeholder="Harga"
+                                          value={opt.price}
+                                          onChange={(e) =>
+                                            handleUpdateOption(
+                                              typeIdx,
+                                              optIdx,
+                                              'price',
+                                              Number(e.target.value)
+                                            )
+                                          }
+                                          className="h-8 w-full rounded-md border border-slate-200 pl-7 pr-2 text-xs font-semibold text-slate-800 focus:border-brand-500 focus:outline-none bg-white"
+                                        />
+                                      </div>
+                                      {errors[`opt_price_${typeIdx}_${optIdx}`] && (
+                                        <p className="text-[10px] text-rose-500 mt-0.5">
+                                          {errors[`opt_price_${typeIdx}_${optIdx}`]}
+                                        </p>
+                                      )}
+                                    </div>
+
+                                    {/* Status Stok / Tersedia */}
+                                    <div className="flex items-center gap-1 shrink-0 px-1">
+                                      <Switch
+                                        checked={opt.is_available}
+                                        onCheckedChange={(val) =>
+                                          handleUpdateOption(typeIdx, optIdx, 'is_available', val)
+                                        }
+                                      />
+                                      <span className="text-[10px] font-medium text-slate-500">
+                                        {opt.is_available ? 'Ready' : 'Habis'}
+                                      </span>
+                                    </div>
+
+                                    {/* Hapus Opsi */}
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRemoveOption(typeIdx, optIdx)}
+                                      className="text-slate-400 hover:text-rose-500 p-1 rounded transition"
+                                      title="Hapus Opsi"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : null}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -249,34 +540,37 @@ export function ProductFormDialog({
               <label className="text-xs font-semibold text-slate-700">Keterangan / Deskripsi Produk</label>
               <textarea
                 rows={3}
-                placeholder="Deskripsi produk, garansi, keunggulan..."
+                placeholder="Rincian garansi, panduan login, ketentuan sharing/private akun..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="mt-1 w-full rounded-xl border border-slate-200 p-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
               />
             </div>
 
-            {/* Toggle Status Aktif */}
-            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3.5 border border-slate-100">
+            {/* Status Aktif */}
+            <div className="flex items-center justify-between rounded-xl border border-slate-200 p-3.5">
               <div>
-                <p className="text-sm font-semibold text-slate-800">Status Aktif</p>
-                <p className="text-xs text-slate-500">Tampilkan produk ini di katalog etalase toko</p>
+                <span className="text-xs font-semibold text-slate-800">Status Pajang Produk</span>
+                <p className="text-[11px] text-slate-400">
+                  Produk aktif akan langsung tampil di halaman etalase toko.
+                </p>
               </div>
               <Switch checked={isActive} onCheckedChange={setIsActive} />
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="p-4 px-6 border-t border-slate-100 bg-slate-50/50">
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
             >
               Batal
             </Button>
-            <Button type="submit" isLoading={isLoading}>
-              {initialData ? 'Simpan Perubahan' : 'Tambah Produk'}
+            <Button type="submit" disabled={isLoading} className="gap-2">
+              <CheckCircle2 className="w-4 h-4" />
+              {isLoading ? 'Menyimpan...' : initialData ? 'Simpan Perubahan' : 'Buat Produk'}
             </Button>
           </DialogFooter>
         </form>
