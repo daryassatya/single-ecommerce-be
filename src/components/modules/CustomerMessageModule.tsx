@@ -3,13 +3,36 @@ import { messageSettingsService } from '@/services/messageSettingsService';
 import { CustomerMessageSetting } from '@/types/database';
 import { Button } from '@/components/ui/Button';
 import { useToast } from '@/components/ui/Toast';
-import { MessageSquareText, Save, RefreshCw, Send, CheckCheck, Sparkles } from 'lucide-react';
+import { MessageSquareText, Save, RefreshCw, Send, CheckCheck, Sparkles, HelpCircle, Info } from 'lucide-react';
+
+const DEFAULT_QRIS_TEMPLATE = `Halo Admin, saya sudah melakukan pembayaran melalui QRIS. Berikut detail pesanan saya:
+
+*No. Pesanan:* {orderId}
+*Detail Pesanan:*
+{daftar_item}
+
+*Total Bayar:* {totalAmount}
+*Metode Pembayaran:* {paymentMethod}
+
+Berikut saya lampirkan screenshot bukti pembayarannya. Mohon diproses ya, terima kasih!`;
+
+const VARIABLE_GUIDES = [
+  { token: '{orderId}', desc: 'Nomor pesanan unik (contoh: CIA-MVV9WVA0)', highlight: true },
+  { token: '{daftar_item}', desc: 'Daftar rincian produk dari keranjang (- Produk (Jenis - Opsi) x Qty = Subtotal)', highlight: true },
+  { token: '{totalAmount}', desc: 'Total nominal pembayaran (contoh: Rp20.000)', highlight: true },
+  { token: '{paymentMethod}', desc: 'Metode pembayaran (QRIS (Semua E-Wallet & Bank))', highlight: true },
+  { token: '{items}', desc: 'Alias format rincian produk (sama seperti {daftar_item})', highlight: false },
+  { token: '{nama_produk}', desc: 'Nama produk pertama/tunggal', highlight: false },
+  { token: '{tipe_produk}', desc: 'Kategori / Jenis varian produk', highlight: false },
+  { token: '{harga}', desc: 'Harga produk', highlight: false },
+  { token: '{deskripsi}', desc: 'Keterangan produk', highlight: false },
+];
 
 export function CustomerMessageModule() {
   const [setting, setSetting] = useState<CustomerMessageSetting | null>(null);
   const [title, setTitle] = useState('Template Pesan Order WhatsApp');
   const [description, setDescription] = useState(
-    'Format pesan yang otomatis dikirim customer saat checkout ke admin WhatsApp.'
+    'Format pesan yang otomatis dikirim customer saat checkout ke admin WhatsApp setelah scan QRIS.'
   );
   const [template, setTemplate] = useState('');
   const [loading, setLoading] = useState(true);
@@ -22,24 +45,13 @@ export function CustomerMessageModule() {
     try {
       setLoading(true);
       const data = await messageSettingsService.get('default_order_message');
-      if (data) {
+      if (data && data.message_template) {
         setSetting(data);
-        setTitle(data.title);
+        setTitle(data.title || 'Template Pesan Order WhatsApp');
         setDescription(data.description || '');
         setTemplate(data.message_template);
       } else {
-        // Default template
-        const defaultText = 
-`Halo Admin Syafira Store! ✨
-Saya ingin memesan produk berikut:
-
-🛍️ Produk: {nama_produk}
-📂 Kategori: {tipe_produk}
-💰 Harga: {harga}
-📝 Keterangan: {deskripsi}
-
-Mohon bantu proses pesanan saya ya. Terima kasih! 🩵`;
-        setTemplate(defaultText);
+        setTemplate(DEFAULT_QRIS_TEMPLATE);
       }
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : 'Gagal memuat pengaturan';
@@ -48,6 +60,7 @@ Mohon bantu proses pesanan saya ya. Terima kasih! 🩵`;
         description: errorMsg,
         variant: 'error',
       });
+      setTemplate(DEFAULT_QRIS_TEMPLATE);
     } finally {
       setLoading(false);
     }
@@ -70,6 +83,15 @@ Mohon bantu proses pesanan saya ya. Terima kasih! 🩵`;
       textarea.focus();
       textarea.setSelectionRange(start + variableToken.length, start + variableToken.length);
     }, 0);
+  };
+
+  const handleResetDefault = () => {
+    setTemplate(DEFAULT_QRIS_TEMPLATE);
+    toast({
+      title: 'Template Direset',
+      description: 'Template dikembalikan ke format pembayaran QRIS default.',
+      variant: 'info',
+    });
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -109,11 +131,19 @@ Mohon bantu proses pesanan saya ya. Terima kasih! 🩵`;
   };
 
   // Generate simulated preview text
+  const simulatedOrderItems = `- CapCut Pro (Sharing 3U - 1 Bulan) x 1 = Rp35.000
+- Canva Pro (Member - 1 Bulan) x 1 = Rp12.000`;
+
   const previewText = template
-    .replace(/\{nama_produk\}/g, 'ChatGPT Plus (Sharing 1 Bulan)')
-    .replace(/\{tipe_produk\}/g, 'Aplikasi Premium')
-    .replace(/\{harga\}/g, 'Rp 10.000')
-    .replace(/\{deskripsi\}/g, 'Akses GPT-4o kilat tanpa antre');
+    .replace(/\{orderId\}/g, 'CIA-MVV9WVA0')
+    .replace(/\{daftar_item\}/g, simulatedOrderItems)
+    .replace(/\{items\}/g, simulatedOrderItems)
+    .replace(/\{totalAmount\}/g, 'Rp47.000')
+    .replace(/\{paymentMethod\}/g, 'QRIS (Semua E-Wallet & Bank)')
+    .replace(/\{nama_produk\}/g, 'CapCut Pro')
+    .replace(/\{tipe_produk\}/g, 'Sharing 3U - 1 Bulan')
+    .replace(/\{harga\}/g, 'Rp35.000')
+    .replace(/\{deskripsi\}/g, simulatedOrderItems);
 
   return (
     <div className="space-y-6">
@@ -122,23 +152,35 @@ Mohon bantu proses pesanan saya ya. Terima kasih! 🩵`;
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
             <MessageSquareText className="w-6 h-6 text-brand-600" />
-            Pengaturan Pesan & Deskripsi Customer
+            Pengaturan Template Pesan WhatsApp
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            Konfigurasi template pesan checkout WhatsApp yang otomatis terisi saat pembeli memilih produk.
+            Konfigurasi template pesan checkout WhatsApp yang otomatis terisi saat pembeli menekan tombol &ldquo;Saya sudah bayar &rarr; WhatsApp&rdquo;.
           </p>
         </div>
 
-        <Button
-          variant="outline"
-          size="md"
-          onClick={loadSetting}
-          disabled={loading}
-          title="Refresh Setting"
-        >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          Muat Ulang
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="md"
+            onClick={handleResetDefault}
+            title="Kembalikan ke Template QRIS Default"
+          >
+            Reset Default QRIS
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="md"
+            onClick={loadSetting}
+            disabled={loading}
+            title="Refresh Setting"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            Muat Ulang
+          </Button>
+        </div>
       </div>
 
       {loading ? (
@@ -175,22 +217,21 @@ Mohon bantu proses pesanan saya ya. Terima kasih! 🩵`;
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                    <Sparkles className="w-3.5 h-3.5 text-brand-500" />
                     Sisipkan Variabel Dinamis (Klik untuk Menambahkan):
                   </label>
                 </div>
                 <div className="flex flex-wrap gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200/70">
-                  {[
-                    { token: '{nama_produk}', desc: 'Nama Produk yang dipilih' },
-                    { token: '{tipe_produk}', desc: 'Kategori Produk' },
-                    { token: '{harga}', desc: 'Harga Terformat (Rp)' },
-                    { token: '{deskripsi}', desc: 'Keterangan/Varian Produk' },
-                  ].map((item) => (
+                  {VARIABLE_GUIDES.map((item) => (
                     <button
                       key={item.token}
                       type="button"
                       onClick={() => handleInsertVariable(item.token)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-brand-200 text-xs font-mono text-brand-700 hover:bg-brand-50 hover:border-brand-400 active:scale-95 transition-all shadow-2xs"
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all active:scale-95 shadow-2xs ${
+                        item.highlight
+                          ? 'bg-brand-50 border border-brand-300 text-brand-700 font-semibold hover:bg-brand-100 hover:border-brand-500'
+                          : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 hover:border-slate-300'
+                      }`}
                       title={item.desc}
                     >
                       <span className="font-bold">+</span>
@@ -207,19 +248,39 @@ Mohon bantu proses pesanan saya ya. Terima kasih! 🩵`;
                 </label>
                 <textarea
                   ref={textareaRef}
-                  rows={8}
+                  rows={9}
                   value={template}
                   onChange={(e) => setTemplate(e.target.value)}
                   placeholder="Ketik template pesan di sini..."
-                  className="mt-1 w-full rounded-xl border border-slate-200 p-3.5 font-sans text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 leading-relaxed"
+                  className="mt-1 w-full rounded-xl border border-slate-200 p-3.5 font-mono text-xs text-slate-800 placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 leading-relaxed"
                 />
-                <p className="mt-1 text-xs text-slate-400">
-                  Gunakan variabel di atas di dalam teks template agar pesan otomatis terisi sesuai pesanan pembeli.
-                </p>
+              </div>
+
+              {/* Panduan Variabel Dinamis Card */}
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 text-xs space-y-2">
+                <div className="font-semibold text-slate-700 flex items-center gap-1.5">
+                  <HelpCircle className="w-4 h-4 text-brand-500" />
+                  Daftar Panduan Variabel Dinamis:
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-600">
+                  <div>
+                    <span className="font-mono font-bold text-brand-700">{"{orderId}"}</span> : Nomor pesanan unik (contoh: CIA-MVV9WVA0)
+                  </div>
+                  <div>
+                    <span className="font-mono font-bold text-brand-700">{"{totalAmount}"}</span> : Total nominal (contoh: Rp20.000)
+                  </div>
+                  <div className="sm:col-span-2">
+                    <span className="font-mono font-bold text-brand-700">{"{daftar_item}"}</span> atau <span className="font-mono font-bold text-brand-700">{"{items}"}</span> : Rincian pesanan keranjang (format: <code className="bg-slate-200/70 px-1 rounded">- Nama (Jenis - Opsi) x Qty = RpSubtotal</code>)
+                  </div>
+                  <div className="sm:col-span-2">
+                    <span className="font-mono font-bold text-brand-700">{"{paymentMethod}"}</span> : Metode pembayaran (contoh: QRIS (Semua E-Wallet & Bank))
+                  </div>
+                </div>
               </div>
 
               {setting?.updated_at && (
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-400 flex items-center gap-1">
+                  <Info className="w-3.5 h-3.5" />
                   Terakhir diperbarui: {new Date(setting.updated_at).toLocaleString('id-ID')}
                 </p>
               )}
@@ -256,7 +317,7 @@ Mohon bantu proses pesanan saya ya. Terima kasih! 🩵`;
                 }}
               >
                 {/* Chat bubble */}
-                <div className="self-end max-w-[90%] rounded-2xl rounded-tr-none bg-[#005c4b] p-3.5 text-white shadow-md relative">
+                <div className="self-end max-w-[92%] rounded-2xl rounded-tr-none bg-[#005c4b] p-3.5 text-white shadow-md relative">
                   <p className="text-xs leading-relaxed whitespace-pre-wrap font-sans">
                     {previewText}
                   </p>
@@ -275,7 +336,7 @@ Mohon bantu proses pesanan saya ya. Terima kasih! 🩵`;
               </div>
 
               <div className="mt-3 text-[11px] text-slate-400 text-center">
-                Preview ini memperlihatkan teks yang akan otomatis terisi saat pembeli menekan tombol order di website Syafira Store.
+                Preview ini memperlihatkan teks yang akan otomatis terisi saat pembeli menekan tombol &ldquo;Saya sudah bayar &rarr; WhatsApp&rdquo; di website Syafira Store.
               </div>
             </div>
           </div>
