@@ -1,6 +1,7 @@
 -- ==============================================================================
 -- SYAFIRA STORE - COMPREHENSIVE SEEDER V4
 -- 3 KATEGORI UTAMA & 56 PRODUK LENGKAP (PARENT-CHILD NESTED VARIANTS)
+-- DILENGKAPI 3 SOCIAL MEDIA RESMI (PROFIL X, WA ORDER, TESTIMONI TELEGRAM)
 -- ==============================================================================
 -- Jalankan script SQL ini di Supabase SQL Editor:
 -- https://supabase.com/dashboard/project/qbwqixbfkwdmfcungqom/sql/new
@@ -46,9 +47,9 @@ DROP POLICY IF EXISTS "Allow full management on variant options" ON public.produ
 CREATE POLICY "Allow full management on variant options" ON public.product_variant_options FOR ALL USING (true) WITH CHECK (true);
 
 -- 3. Bersihkan data dummy lama (Opsional tapi direkomendasikan agar bersih)
--- Cascade akan membersihkan product_variant_types & product_variant_options
 DELETE FROM public.products;
 DELETE FROM public.product_types;
+DELETE FROM public.social_media_links;
 
 -- 4. Masukkan 3 Kategori Utama
 INSERT INTO public.product_types (id, name, slug, description, is_active)
@@ -62,7 +63,14 @@ ON CONFLICT (id) DO UPDATE SET
     description = EXCLUDED.description,
     is_active = TRUE;
 
--- 5. Masukkan 56 Produk Beserta Nested Variant Types & Options
+-- 5. Masukkan 3 Social Media Resmi Syafira Store
+INSERT INTO public.social_media_links (platform, title, description, url, icon_name, sort_order, is_active, is_external)
+VALUES
+    ('X (Twitter)', 'Profil X', 'x.com/oepalin • Akun resmi & update harian', 'https://x.com/oepalin', 'AtSign', 1, TRUE, TRUE),
+    ('WhatsApp', 'WhatsApp Order', 'bit.ly/wa-ciaa • Order kilat & fast response', 'https://bit.ly/wa-ciaa', 'Send', 2, TRUE, TRUE),
+    ('Telegram', 'Testimoni Telegram', 't.me/spivces • Bukti transaksi & review', 'https://t.me/spivces', 'FileCheck2', 3, TRUE, TRUE);
+
+-- 6. Masukkan 56 Produk Beserta Nested Variant Types & Options
 DO $$
 DECLARE
     v_prod_id UUID;
