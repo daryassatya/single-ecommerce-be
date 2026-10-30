@@ -149,50 +149,43 @@ CREATE POLICY "Allow full management on social_media_links" ON public.social_med
 -- ------------------------------------------------------------------------------
 -- 7. INITIAL SEED DATA (SINKRON DENGAN SYAFIRA STORE FRONTEND)
 -- ------------------------------------------------------------------------------
-DO $$
-DECLARE
-    app_type_id UUID;
-    game_type_id UUID;
-BEGIN
-    -- Masukkan Kategori/Tipe Produk jika belum ada
-    INSERT INTO public.product_types (id, name, slug, description, is_active)
-    VALUES 
-        ('11111111-1111-1111-1111-111111111111', 'Aplikasi Premium', 'app', 'Langganan aplikasi streaming, produktivitas, dan AI', TRUE),
-        ('22222222-2222-2222-2222-222222222222', 'Game Top Up', 'game', 'Top up diamond game dan robux resmi bergaransi', TRUE)
-    ON CONFLICT (slug) DO UPDATE 
-    SET name = EXCLUDED.name, description = EXCLUDED.description
-    RETURNING id INTO app_type_id;
+-- 7.1 Masukkan Kategori/Tipe Produk jika belum ada
+INSERT INTO public.product_types (id, name, slug, description, is_active)
+VALUES 
+    ('11111111-1111-1111-1111-111111111111', 'Aplikasi Premium', 'app', 'Langganan aplikasi streaming, produktivitas, dan AI', TRUE),
+    ('22222222-2222-2222-2222-222222222222', 'Game Top Up', 'game', 'Top up diamond game dan robux resmi bergaransi', TRUE)
+ON CONFLICT (slug) DO UPDATE 
+SET name = EXCLUDED.name, description = EXCLUDED.description;
 
-    -- Masukkan Produk Awal berbasis Lucide Icon
-    INSERT INTO public.products (name, type_id, price, badge, icon_name, variants, description, is_active)
-    VALUES
-        ('ChatGPT Plus', '11111111-1111-1111-1111-111111111111', 10000, 'AI · 5 varian', 'Sparkles', ARRAY['Sharing 7 Hari', 'Sharing 1 Bulan', 'Private 1 Bulan'], 'Akses GPT-4o, DALL-E, dan fitur analisis data tanpa antre.', TRUE),
-        ('Canva Pro', '11111111-1111-1111-1111-111111111111', 3000, 'Desain · 1 varian', 'Palette', ARRAY['Invite Email 1 Bulan', 'Invite Email 1 Tahun'], 'Buka semua template premium, hapus background instan, dan export kualitas ultra.', TRUE),
-        ('DramaBox VIP', '11111111-1111-1111-1111-111111111111', 15000, 'Drama · 2 varian', 'Clapperboard', ARRAY['Sharing 1 Bulan', 'Private 1 Bulan'], 'Nonton drama pendek viral subtitle Indonesia tanpa koin.', TRUE),
-        ('Netflix Premium', '11111111-1111-1111-1111-111111111111', 8000, 'Streaming · 2 varian', 'Tv', ARRAY['1 Profile 1 Bulan UHD', 'Private 1 Bulan'], 'Kualitas Ultra HD 4K, profil aman ber-PIN, legal dan bergaransi.', TRUE),
-        ('Mobile Legends', '22222222-2222-2222-2222-222222222222', 17000, 'Game · 8 varian', 'Swords', ARRAY['Weekly Diamond Pass', '86 Diamonds', '172 Diamonds', '257 Diamonds'], 'Top up via User ID & Zone ID, proses 1-5 menit langsung masuk.', TRUE),
-        ('Robux Roblox', '22222222-2222-2222-2222-222222222222', 16000, 'Game · 1 varian', 'Box', ARRAY['100 Robux via Send', '500 Robux via Send', '1000 Robux via Send'], 'Robux legal via Gamepass/Send, garansi aman dari ban.', TRUE)
-    ON CONFLICT DO NOTHING;
+-- 7.2 Masukkan Produk Awal berbasis Lucide Icon
+INSERT INTO public.products (name, type_id, price, badge, icon_name, variants, description, is_active)
+VALUES
+    ('ChatGPT Plus', '11111111-1111-1111-1111-111111111111', 10000, 'AI · 5 varian', 'Sparkles', ARRAY['Sharing 7 Hari', 'Sharing 1 Bulan', 'Private 1 Bulan'], 'Akses GPT-4o, DALL-E, dan fitur analisis data tanpa antre.', TRUE),
+    ('Canva Pro', '11111111-1111-1111-1111-111111111111', 3000, 'Desain · 1 varian', 'Palette', ARRAY['Invite Email 1 Bulan', 'Invite Email 1 Tahun'], 'Buka semua template premium, hapus background instan, dan export kualitas ultra.', TRUE),
+    ('DramaBox VIP', '11111111-1111-1111-1111-111111111111', 15000, 'Drama · 2 varian', 'Clapperboard', ARRAY['Sharing 1 Bulan', 'Private 1 Bulan'], 'Nonton drama pendek viral subtitle Indonesia tanpa koin.', TRUE),
+    ('Netflix Premium', '11111111-1111-1111-1111-111111111111', 8000, 'Streaming · 2 varian', 'Tv', ARRAY['1 Profile 1 Bulan UHD', 'Private 1 Bulan'], 'Kualitas Ultra HD 4K, profil aman ber-PIN, legal dan bergaransi.', TRUE),
+    ('Mobile Legends', '22222222-2222-2222-2222-222222222222', 17000, 'Game · 8 varian', 'Swords', ARRAY['Weekly Diamond Pass', '86 Diamonds', '172 Diamonds', '257 Diamonds'], 'Top up via User ID & Zone ID, proses 1-5 menit langsung masuk.', TRUE),
+    ('Robux Roblox', '22222222-2222-2222-2222-222222222222', 16000, 'Game · 1 varian', 'Box', ARRAY['100 Robux via Send', '500 Robux via Send', '1000 Robux via Send'], 'Robux legal via Gamepass/Send, garansi aman dari ban.', TRUE)
+ON CONFLICT DO NOTHING;
 
-    -- Masukkan Template Pesan Default
-    INSERT INTO public.customer_message_settings (setting_key, title, description, message_template)
-    VALUES (
-        'default_order_message',
-        'Template Pesan Order WhatsApp',
-        'Format pesan pemesanan yang otomatis dihasilkan saat pelanggan memilih produk di Syafira Store.',
-        E'Halo Admin Syafira Store! ✨\nSaya ingin memesan produk berikut:\n\n🛍️ Produk: {nama_produk}\n📂 Kategori: {tipe_produk}\n💰 Harga: {harga}\n📝 Keterangan: {deskripsi}\n\nMohon bantu proses pesanan saya ya. Terima kasih! 🩵'
-    )
-    ON CONFLICT (setting_key) DO UPDATE 
-    SET title = EXCLUDED.title, message_template = EXCLUDED.message_template;
+-- 7.3 Masukkan Template Pesan Default
+INSERT INTO public.customer_message_settings (setting_key, title, description, message_template)
+VALUES (
+    'default_order_message',
+    'Template Pesan Order WhatsApp',
+    'Format pesan pemesanan yang otomatis dihasilkan saat pelanggan memilih produk di Syafira Store.',
+    E'Halo Admin Syafira Store! ✨\nSaya ingin memesan produk berikut:\n\n🛍️ Produk: {nama_produk}\n📂 Kategori: {tipe_produk}\n💰 Harga: {harga}\n📝 Keterangan: {deskripsi}\n\nMohon bantu proses pesanan saya ya. Terima kasih! 🩵'
+)
+ON CONFLICT (setting_key) DO UPDATE 
+SET title = EXCLUDED.title, message_template = EXCLUDED.message_template;
 
-    -- Masukkan Social Media Links
-    INSERT INTO public.social_media_links (platform, title, url, icon_name, sort_order, is_active)
-    VALUES
-        ('WhatsApp', 'WhatsApp Group', 'https://chat.whatsapp.com/example-syafira', 'Users', 1, TRUE),
-        ('WhatsApp', 'WhatsApp Channel', 'https://whatsapp.com/channel/example-syafira', 'Radio', 2, TRUE),
-        ('Discord', 'Discord Community', 'https://discord.gg/example-syafira', 'Gamepad2', 3, TRUE),
-        ('Twitter / X', 'X (@syafirastore)', 'https://x.com/syafirastore', 'AtSign', 4, TRUE),
-        ('Telegram', 'Telegram Channel', 'https://t.me/syafirastore', 'Send', 5, TRUE)
-    ON CONFLICT DO NOTHING;
+-- 7.4 Masukkan Social Media Links
+INSERT INTO public.social_media_links (platform, title, url, icon_name, sort_order, is_active)
+VALUES
+    ('WhatsApp', 'WhatsApp Group', 'https://chat.whatsapp.com/example-syafira', 'Users', 1, TRUE),
+    ('WhatsApp', 'WhatsApp Channel', 'https://whatsapp.com/channel/example-syafira', 'Radio', 2, TRUE),
+    ('Discord', 'Discord Community', 'https://discord.gg/example-syafira', 'Gamepad2', 3, TRUE),
+    ('Twitter / X', 'X (@syafirastore)', 'https://x.com/syafirastore', 'AtSign', 4, TRUE),
+    ('Telegram', 'Telegram Channel', 'https://t.me/syafirastore', 'Send', 5, TRUE)
+ON CONFLICT DO NOTHING;
 
-END $$;
