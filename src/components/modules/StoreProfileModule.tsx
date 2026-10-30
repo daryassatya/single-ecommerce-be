@@ -24,12 +24,12 @@ export function StoreProfileModule() {
 
   // Form State
   const [storeName, setStoreName] = useState('Syafira Store ✦˚𝜗𝜚.ᐟ');
-  const [handle, setHandle] = useState('@syafirastore');
-  const [badgeText, setBadgeText] = useState('GAME AND APPS NEEDS');
-  const [bio, setBio] = useState('welcome bestie! 🦋 🎀 game needs & apps premium ✩💬👧🏻✨ trusted only ♡🌟 ִֶָ');
+  const [handle, setHandle] = useState('@oepalin');
+  const [badgeText, setBadgeText] = useState('DIGITAL GOODIES & SOCIAL HUB');
+  const [bio, setBio] = useState('');
   const [whatsappNumber, setWhatsappNumber] = useState('6281400688284');
   const [isOpen, setIsOpen] = useState(true);
-  const [statGoodies, setStatGoodies] = useState('52');
+  const [statGoodies, setStatGoodies] = useState('56');
   const [statFolls, setStatFolls] = useState('3.2k');
   const [statFolks, setStatFolks] = useState('4.1k');
   const [announcementText, setAnnouncementText] = useState(
