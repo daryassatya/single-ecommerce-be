@@ -10,17 +10,22 @@ export interface AdminAccount {
 
 const STORAGE_ACCOUNTS_KEY = 'syafira_admin_accounts_v1';
 
-// Default / Seeded accounts
+// Seeded credentials read securely from environment variables (Never hardcoded)
+const DEFAULT_EMAIL = (import.meta.env.VITE_ADMIN_DEFAULT_EMAIL || 'prabandarisyafira@gmail.com').toLowerCase();
+const DEFAULT_PASS = import.meta.env.VITE_ADMIN_DEFAULT_PASSWORD || '';
+const SECONDARY_EMAIL = (import.meta.env.VITE_ADMIN_SECONDARY_EMAIL || 'daryassatya@gmail.com').toLowerCase();
+const SECONDARY_PASS = import.meta.env.VITE_ADMIN_SECONDARY_PASSWORD || '';
+
 export const SEEDED_ADMINS: AdminAccount[] = [
   {
-    email: 'prabandarisyafira@gmail.com',
-    password: '@syafira123',
+    email: DEFAULT_EMAIL,
+    password: DEFAULT_PASS,
     name: 'Syafira Prabandari',
     role: 'Super Admin',
   },
   {
-    email: 'daryassatya@gmail.com',
-    password: 'tititsayabesar123',
+    email: SECONDARY_EMAIL,
+    password: SECONDARY_PASS,
     name: 'Darya Satya',
     role: 'Super Admin',
   },
@@ -32,11 +37,10 @@ function getStoredAdmins(): AdminAccount[] {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        // Merge with seeded to guarantee daryassatya and prabandari exist
         const emails = new Set(parsed.map((a: AdminAccount) => a.email.toLowerCase()));
         const merged = [...parsed];
         for (const s of SEEDED_ADMINS) {
-          if (!emails.has(s.email.toLowerCase())) {
+          if (!emails.has(s.email.toLowerCase()) && s.password) {
             merged.push(s);
           }
         }
@@ -44,7 +48,7 @@ function getStoredAdmins(): AdminAccount[] {
       }
     }
   } catch {
-    // ignore
+    // Ignore storage parse errors
   }
   return SEEDED_ADMINS;
 }
@@ -53,13 +57,13 @@ function saveStoredAdmins(admins: AdminAccount[]) {
   try {
     localStorage.setItem(STORAGE_ACCOUNTS_KEY, JSON.stringify(admins));
   } catch {
-    // ignore
+    // Ignore storage write errors
   }
 }
 
 export const adminAccountsService = {
   /**
-   * Verify credentials against Supabase admin_accounts or local persistent accounts.
+   * Verify credentials against Supabase admin_accounts or securely seeded local accounts.
    */
   async verifyLogin(emailInput: string, passwordInput: string): Promise<AdminAccount | null> {
     const cleanEmail = emailInput.trim().toLowerCase();
@@ -83,10 +87,10 @@ export const adminAccountsService = {
         };
       }
     } catch {
-      // Supabase table not created yet or RLS restriction, fallback to local
+      // Supabase table not created yet or offline, fallback to secure local credentials
     }
 
-    // 2. Check local accounts (including SEEDED_ADMINS)
+    // 2. Check local accounts (seeded from environment variables)
     const localAdmins = getStoredAdmins();
     const found = localAdmins.find(
       (a) => a.email.toLowerCase() === cleanEmail && a.password === cleanPassword
@@ -105,7 +109,7 @@ export const adminAccountsService = {
   },
 
   /**
-   * Update admin account credentials (email and/or password) with old password verification.
+   * Update admin account credentials with old password verification.
    */
   async updateCredentials(params: {
     currentEmail: string;
@@ -129,7 +133,7 @@ export const adminAccountsService = {
 
     let isPasswordValid = false;
 
-    // Verify against Supabase if exists
+    // Verify against Supabase if table exists
     try {
       const { data } = await supabase
         .from('admin_accounts')
@@ -140,7 +144,7 @@ export const adminAccountsService = {
 
       if (data) isPasswordValid = true;
     } catch {
-      // ignore
+      // Ignore
     }
 
     if (!isPasswordValid && foundIdx !== -1) {
@@ -178,7 +182,7 @@ export const adminAccountsService = {
           { onConflict: 'email' }
         );
     } catch {
-      // Continue to local update
+      // Continue to local storage update
     }
 
     // Update in Local Storage

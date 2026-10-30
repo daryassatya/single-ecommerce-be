@@ -1,32 +1,66 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { ToastProvider } from '@/components/ui/Toast';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { LoginPage } from '@/components/auth/LoginPage';
 import { Sidebar, NavTab } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
-import { OverviewModule } from '@/components/modules/OverviewModule';
-import { ProductsModule } from '@/components/modules/ProductsModule';
-import { ProductTypesModule } from '@/components/modules/ProductTypesModule';
-import { CustomerMessageModule } from '@/components/modules/CustomerMessageModule';
-import { SocialLinksModule } from '@/components/modules/SocialLinksModule';
-import { TestimonialsModule } from '@/components/modules/TestimonialsModule';
-import { HeroSlidesModule } from '@/components/modules/HeroSlidesModule';
-import { TermsModule } from '@/components/modules/TermsModule';
-import { StoreProfileModule } from '@/components/modules/StoreProfileModule';
-import { SettingsModule } from '@/components/modules/SettingsModule';
-import { AccountSettingsModule } from '@/components/modules/AccountSettingsModule';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, RefreshCw } from 'lucide-react';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { EnvConfigScreen } from '@/components/ui/EnvConfigScreen';
+
+// Code-splitting & Lazy-loading for all dashboard modules (Spec 3)
+const OverviewModule = lazy(() =>
+  import('@/components/modules/OverviewModule').then((m) => ({ default: m.OverviewModule }))
+);
+const ProductsModule = lazy(() =>
+  import('@/components/modules/ProductsModule').then((m) => ({ default: m.ProductsModule }))
+);
+const ProductTypesModule = lazy(() =>
+  import('@/components/modules/ProductTypesModule').then((m) => ({ default: m.ProductTypesModule }))
+);
+const TestimonialsModule = lazy(() =>
+  import('@/components/modules/TestimonialsModule').then((m) => ({ default: m.TestimonialsModule }))
+);
+const HeroSlidesModule = lazy(() =>
+  import('@/components/modules/HeroSlidesModule').then((m) => ({ default: m.HeroSlidesModule }))
+);
+const TermsModule = lazy(() =>
+  import('@/components/modules/TermsModule').then((m) => ({ default: m.TermsModule }))
+);
+const SocialLinksModule = lazy(() =>
+  import('@/components/modules/SocialLinksModule').then((m) => ({ default: m.SocialLinksModule }))
+);
+const CustomerMessageModule = lazy(() =>
+  import('@/components/modules/CustomerMessageModule').then((m) => ({ default: m.CustomerMessageModule }))
+);
+const StoreProfileModule = lazy(() =>
+  import('@/components/modules/StoreProfileModule').then((m) => ({ default: m.StoreProfileModule }))
+);
+const SettingsModule = lazy(() =>
+  import('@/components/modules/SettingsModule').then((m) => ({ default: m.SettingsModule }))
+);
+const AccountSettingsModule = lazy(() =>
+  import('@/components/modules/AccountSettingsModule').then((m) => ({ default: m.AccountSettingsModule }))
+);
+
+function DashboardModuleSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse">
+      <div className="h-10 w-64 bg-slate-200/70 rounded-xl" />
+      <div className="h-4 w-96 bg-slate-200/50 rounded-lg" />
+      <div className="h-64 w-full bg-white rounded-3xl border border-slate-200/80 p-8 flex items-center justify-center">
+        <RefreshCw className="w-6 h-6 animate-spin text-brand-500" />
+      </div>
+    </div>
+  );
+}
 
 function DashboardContent() {
   const { isAuthenticated, isLoading } = useAuth();
   const [currentTab, setCurrentTab] = useState<NavTab>('overview');
-  // Default open on desktop, closed on mobile
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
-    // If mobile on initial load, close sidebar
     if (window.innerWidth < 1024) {
       setSidebarOpen(false);
     }
@@ -82,17 +116,19 @@ function DashboardContent() {
         />
 
         <main className="flex-1 p-3.5 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto overflow-x-hidden">
-          {currentTab === 'overview' && <OverviewModule onNavigate={setCurrentTab} />}
-          {currentTab === 'products' && <ProductsModule />}
-          {currentTab === 'types' && <ProductTypesModule />}
-          {currentTab === 'testimonials' && <TestimonialsModule />}
-          {currentTab === 'hero' && <HeroSlidesModule />}
-          {currentTab === 'terms' && <TermsModule />}
-          {currentTab === 'social' && <SocialLinksModule />}
-          {currentTab === 'message' && <CustomerMessageModule />}
-          {currentTab === 'profile' && <StoreProfileModule />}
-          {currentTab === 'settings' && <SettingsModule />}
-          {currentTab === 'account' && <AccountSettingsModule />}
+          <Suspense fallback={<DashboardModuleSkeleton />}>
+            {currentTab === 'overview' && <OverviewModule onNavigate={setCurrentTab} />}
+            {currentTab === 'products' && <ProductsModule />}
+            {currentTab === 'types' && <ProductTypesModule />}
+            {currentTab === 'testimonials' && <TestimonialsModule />}
+            {currentTab === 'hero' && <HeroSlidesModule />}
+            {currentTab === 'terms' && <TermsModule />}
+            {currentTab === 'social' && <SocialLinksModule />}
+            {currentTab === 'message' && <CustomerMessageModule />}
+            {currentTab === 'profile' && <StoreProfileModule />}
+            {currentTab === 'settings' && <SettingsModule />}
+            {currentTab === 'account' && <AccountSettingsModule />}
+          </Suspense>
         </main>
       </div>
     </div>

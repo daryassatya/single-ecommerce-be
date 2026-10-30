@@ -376,6 +376,8 @@ export function HeroSlidesModule() {
                     <img
                       src={slide.image_url}
                       alt={slide.title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover object-center"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/20" />
@@ -493,6 +495,8 @@ export function HeroSlidesModule() {
                     <img
                       src={imagePreview}
                       alt="Preview Banner"
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
