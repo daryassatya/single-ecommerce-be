@@ -92,12 +92,13 @@ export function Sidebar({ currentTab, onTabChange, isOpen, onClose }: SidebarPro
             </div>
           </div>
 
-          {/* Close button on mobile */}
+          {/* Hide / Toggle button */}
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 lg:hidden"
-            title="Tutup Menu"
+            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition border border-transparent hover:border-slate-200"
+            title="Sembunyikan Sidebar (Hide)"
+            aria-label="Sembunyikan Sidebar"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -118,7 +119,6 @@ export function Sidebar({ currentTab, onTabChange, isOpen, onClose }: SidebarPro
                 type="button"
                 onClick={() => {
                   onTabChange(item.id);
-                  onClose();
                 }}
                 className={cn(
                   'flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-semibold transition-all',
