@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Menu, Database, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { Menu, Database, ShieldCheck, CheckCircle2, AlertCircle, LogOut } from 'lucide-react';
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -9,6 +10,7 @@ interface HeaderProps {
 
 export function Header({ onToggleSidebar, activeTabTitle }: HeaderProps) {
   const [dbStatus, setDbStatus] = useState<'checking' | 'connected' | 'error'>('checking');
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
@@ -17,7 +19,6 @@ export function Header({ onToggleSidebar, activeTabTitle }: HeaderProps) {
         const { error } = await supabase.from('product_types').select('id', { count: 'exact', head: true });
         if (isMounted) {
           if (error && error.code !== 'PGRST116') {
-            // Note: If table does not exist yet before running schema.sql, still shows schema setup notice
             setDbStatus('connected');
           } else {
             setDbStatus('connected');
@@ -84,17 +85,30 @@ export function Header({ onToggleSidebar, activeTabTitle }: HeaderProps) {
           <span>Vercel-Ready</span>
         </div>
 
-        {/* Admin profile */}
-        <div className="flex items-center gap-2.5 pl-2 border-l border-slate-200">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-brand-700 font-bold text-xs ring-2 ring-brand-500/20">
-            AS
+        {/* Admin profile & Logout */}
+        <div className="flex items-center gap-3 pl-2 border-l border-slate-200">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-brand-700 font-bold text-xs ring-2 ring-brand-500/20">
+              SP
+            </div>
+            <div className="hidden sm:block text-left">
+              <p className="text-xs font-bold text-slate-900 leading-tight">
+                {user?.name || 'Syafira Prabandari'}
+              </p>
+              <p className="text-[10px] text-slate-500 flex items-center gap-1">
+                <ShieldCheck className="w-2.5 h-2.5 text-emerald-500" /> {user?.role || 'Super Admin'}
+              </p>
+            </div>
           </div>
-          <div className="hidden sm:block text-left">
-            <p className="text-xs font-bold text-slate-900 leading-tight">Admin Syafira</p>
-            <p className="text-[10px] text-slate-500 flex items-center gap-1">
-              <ShieldCheck className="w-2.5 h-2.5 text-emerald-500" /> Super Admin
-            </p>
-          </div>
+
+          <button
+            type="button"
+            onClick={logout}
+            className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+            title="Keluar dari Dashboard (Logout)"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </header>

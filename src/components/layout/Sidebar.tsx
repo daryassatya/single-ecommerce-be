@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/AuthContext';
 import {
   LayoutDashboard,
   Layers,
@@ -8,6 +9,7 @@ import {
   Sliders,
   ExternalLink,
   Sparkles,
+  LogOut,
 } from 'lucide-react';
 
 export type NavTab = 'overview' | 'types' | 'products' | 'message' | 'social' | 'settings';
@@ -20,6 +22,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ currentTab, onTabChange, isOpen, onClose }: SidebarProps) {
+  const { logout } = useAuth();
   const menuItems = [
     { id: 'overview' as NavTab, label: 'Overview', icon: LayoutDashboard, badge: null },
     { id: 'products' as NavTab, label: 'Katalog Produk', icon: Package, badge: 'Lucide' },
@@ -135,6 +138,15 @@ export function Sidebar({ currentTab, onTabChange, isOpen, onClose }: SidebarPro
               <ExternalLink className="w-3 h-3" />
             </a>
           </div>
+
+          <button
+            type="button"
+            onClick={logout}
+            className="mt-2.5 w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-rose-100 bg-white hover:bg-rose-50 text-rose-600 hover:text-rose-700 text-xs font-semibold transition-colors shadow-2xs"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Keluar (Logout)</span>
+          </button>
         </div>
       </aside>
     </>
