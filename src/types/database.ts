@@ -101,6 +101,7 @@ export interface HeroSlide {
   description: string;
   sort_order: number;
   is_active: boolean;
+  image_url?: string | null;
   created_at: string;
 }
 

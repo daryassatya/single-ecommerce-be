@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { heroSlidesService } from '@/services/heroSlidesService';
 import { HeroSlide, HeroSlideInput } from '@/types/database';
 import {
@@ -30,7 +30,13 @@ import {
   RefreshCw,
   Sparkles,
   Layers,
+  Upload,
+  Image as ImageIcon,
+  X,
 } from 'lucide-react';
+
+const MAX_SLIDES = 5;
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 export function HeroSlidesModule() {
   const [slides, setSlides] = useState<HeroSlide[]>([]);
@@ -45,7 +51,15 @@ export function HeroSlidesModule() {
     description: '',
     sort_order: 1,
     is_active: true,
+    image_url: null,
   });
+
+  // Image Upload State
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [submitting, setSubmitting] = useState(false);
 
   // Delete Alert State
@@ -76,6 +90,15 @@ export function HeroSlidesModule() {
   }, []);
 
   const handleOpenCreate = () => {
+    if (slides.length >= MAX_SLIDES) {
+      toast({
+        title: 'Batas Maksimal Tercapai',
+        description: `Maksimal ${MAX_SLIDES} slide banner carousel telah tercapai. Hapus slide lama sebelum menambah yang baru.`,
+        variant: 'error',
+      });
+      return;
+    }
+
     setEditingItem(null);
     setFormData({
       badge: 'PROMO SPESIAL',
@@ -83,7 +106,10 @@ export function HeroSlidesModule() {
       description: '',
       sort_order: slides.length + 1,
       is_active: true,
+      image_url: null,
     });
+    setSelectedFile(null);
+    setImagePreview(null);
     setDialogOpen(true);
   };
 
@@ -95,8 +121,51 @@ export function HeroSlidesModule() {
       description: slide.description,
       sort_order: slide.sort_order,
       is_active: slide.is_active,
+      image_url: slide.image_url || null,
     });
+    setSelectedFile(null);
+    setImagePreview(slide.image_url || null);
     setDialogOpen(true);
+  };
+
+  // Validasi dan Tangani File Gambar
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // 1. Pengecekan tipe file: Hanya boleh bertipe gambar
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: 'Format File Tidak Didukung',
+        description: 'File yang dipilih bukan gambar. Hanya file gambar (JPG, PNG, WEBP, GIF) yang diperbolehkan.',
+        variant: 'error',
+      });
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    // 2. Pengecekan ukuran file: Maksimal 5MB
+    if (file.size > MAX_FILE_SIZE) {
+      const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+      toast({
+        title: 'Ukuran Gambar Terlalu Besar',
+        description: `Ukuran file (${sizeMb} MB) melebihi batas maksimal 5 MB.`,
+        variant: 'error',
+      });
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    setSelectedFile(file);
+    const objectUrl = URL.createObjectURL(file);
+    setImagePreview(objectUrl);
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedFile(null);
+    setImagePreview(null);
+    setFormData((prev) => ({ ...prev, image_url: null }));
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -112,8 +181,35 @@ export function HeroSlidesModule() {
 
     try {
       setSubmitting(true);
+      let finalImageUrl = formData.image_url;
+
+      // Upload file baru jika ada
+      if (selectedFile) {
+        setUploadingImage(true);
+        try {
+          finalImageUrl = await heroSlidesService.uploadImage(selectedFile);
+        } catch (uploadErr) {
+          const errMsg = uploadErr instanceof Error ? uploadErr.message : 'Gagal mengupload gambar';
+          toast({
+            title: 'Upload Gambar Gagal',
+            description: errMsg,
+            variant: 'error',
+          });
+          setSubmitting(false);
+          setUploadingImage(false);
+          return;
+        } finally {
+          setUploadingImage(false);
+        }
+      }
+
+      const payload: HeroSlideInput = {
+        ...formData,
+        image_url: finalImageUrl,
+      };
+
       if (editingItem) {
-        const updated = await heroSlidesService.update(editingItem.id, formData);
+        const updated = await heroSlidesService.update(editingItem.id, payload);
         setSlides((prev) =>
           prev
             .map((s) => (s.id === updated.id ? updated : s))
@@ -121,17 +217,20 @@ export function HeroSlidesModule() {
         );
         toast({
           title: 'Banner Diperbarui',
-          description: `Banner "${formData.title}" berhasil diupdate.`,
+          description: `Banner "${formData.title}" berhasil disimpan.`,
           variant: 'success',
         });
       } else {
-        const created = await heroSlidesService.create(formData);
+        if (slides.length >= MAX_SLIDES) {
+          throw new Error(`Maksimal ${MAX_SLIDES} slide banner carousel telah tercapai.`);
+        }
+        const created = await heroSlidesService.create(payload);
         setSlides((prev) =>
           [...prev, created].sort((a, b) => a.sort_order - b.sort_order)
         );
         toast({
           title: 'Banner Ditambahkan',
-          description: `Banner baru siap ditampilkan di website.`,
+          description: 'Slide banner baru siap ditampilkan di beranda frontend.',
           variant: 'success',
         });
       }
@@ -154,7 +253,7 @@ export function HeroSlidesModule() {
       setSlides((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
       toast({
         title: updated.is_active ? 'Banner Diaktifkan' : 'Banner Dinonaktifkan',
-        description: `Status tayang banner telah diubah.`,
+        description: 'Status tayang banner di frontend telah diubah.',
         variant: 'info',
       });
     } catch {
@@ -190,17 +289,28 @@ export function HeroSlidesModule() {
     }
   };
 
+  const isMaxSlidesReached = slides.length >= MAX_SLIDES;
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <span>Hero Banner Carousel</span>
-            <Sparkles className="w-5 h-5 text-amber-500" />
-          </h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+              <span>Hero Banner Carousel</span>
+              <Sparkles className="w-5 h-5 text-amber-500" />
+            </h2>
+            <span className={`text-xs px-2.5 py-1 rounded-full font-bold font-mono ${
+              isMaxSlidesReached
+                ? 'bg-rose-100 text-rose-700 border border-rose-300'
+                : 'bg-brand-50 text-brand-700 border border-brand-200'
+            }`}>
+              {slides.length} / {MAX_SLIDES} Slide
+            </span>
+          </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Kelola slide banner sambutan yang berputar otomatis di bagian atas frontend store.
+            Kelola slide banner sambutan yang berputar otomatis di beranda frontend (maksimal {MAX_SLIDES} slide, gambar &le; 5MB).
           </p>
         </div>
         <div className="flex items-center gap-2.5">
@@ -214,9 +324,17 @@ export function HeroSlidesModule() {
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Segarkan</span>
           </Button>
-          <Button onClick={handleOpenCreate} size="sm" className="gap-2">
+          <Button
+            onClick={handleOpenCreate}
+            size="sm"
+            disabled={isMaxSlidesReached}
+            className={`gap-2 ${
+              isMaxSlidesReached ? 'opacity-60 cursor-not-allowed' : ''
+            }`}
+            title={isMaxSlidesReached ? 'Maksimal 5 slide telah tercapai' : 'Tambah Slide Banner'}
+          >
             <Plus className="w-4 h-4" />
-            <span>Tambah Slide Banner</span>
+            <span>{isMaxSlidesReached ? 'Batas 5 Slide Penuh' : 'Tambah Slide Banner'}</span>
           </Button>
         </div>
       </div>
@@ -225,7 +343,7 @@ export function HeroSlidesModule() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[1, 2, 3].map((n) => (
-            <div key={n} className="h-44 rounded-3xl bg-slate-100 animate-pulse" />
+            <div key={n} className="h-52 rounded-3xl bg-slate-100 animate-pulse" />
           ))}
         </div>
       ) : slides.length === 0 ? (
@@ -233,7 +351,7 @@ export function HeroSlidesModule() {
           <Layers className="w-10 h-10 text-slate-300 mx-auto mb-3" />
           <h3 className="text-sm font-bold text-slate-700">Belum ada slide banner</h3>
           <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
-            Buat slide sambutan pertama untuk memikat pengunjung toko Anda!
+            Buat slide sambutan pertama untuk memikat pengunjung toko Anda! (Maksimal {MAX_SLIDES} slide).
           </p>
           <Button onClick={handleOpenCreate} size="sm" className="mt-4 gap-1.5">
             <Plus className="w-4 h-4" />
@@ -245,34 +363,60 @@ export function HeroSlidesModule() {
           {slides.map((slide, index) => (
             <div
               key={slide.id}
-              className={`rounded-3xl overflow-hidden border transition-all ${
+              className={`rounded-3xl overflow-hidden border transition-all flex flex-col justify-between ${
                 slide.is_active
                   ? 'bg-white border-slate-200/90 shadow-sm hover:border-slate-300'
                   : 'bg-slate-50 border-slate-200/60 opacity-70'
               }`}
             >
-              {/* Cute pastel preview banner */}
-              <div className="relative p-5 bg-gradient-to-tr from-sky-100 via-brand-50 to-indigo-100 border-b border-slate-100">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/80 border border-brand-200 text-[10px] font-bold text-brand-700 uppercase tracking-wider shadow-xs">
-                    Slide #{slide.sort_order || index + 1}
-                  </span>
-                  <div className="flex items-center gap-2">
+              {/* Slide Preview Banner */}
+              <div className="relative h-44 sm:h-48 overflow-hidden bg-slate-900 border-b border-slate-100">
+                {slide.image_url ? (
+                  <>
+                    <img
+                      src={slide.image_url}
+                      alt={slide.title}
+                      className="w-full h-full object-cover object-center"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/20" />
+                  </>
+                ) : (
+                  <div className="w-full h-full p-5 bg-gradient-to-tr from-sky-100 via-brand-50 to-indigo-100 flex flex-col justify-between" />
+                )}
+
+                {/* Overlay Text Content */}
+                <div className="absolute inset-0 p-4 sm:p-5 flex flex-col justify-between text-left">
+                  <div className="flex items-center justify-between">
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-xs ${
+                      slide.image_url
+                        ? 'bg-black/60 text-white backdrop-blur-xs border border-white/20'
+                        : 'bg-white/80 border border-brand-200 text-brand-700'
+                    }`}>
+                      Slide #{slide.sort_order || index + 1}
+                    </span>
                     <Badge variant={slide.is_active ? 'success' : 'slate'} className="text-[10px]">
                       {slide.is_active ? 'Aktif' : 'Nonaktif'}
                     </Badge>
                   </div>
-                </div>
 
-                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">
-                  {slide.badge}
-                </p>
-                <h3 className="text-base sm:text-lg font-extrabold text-slate-900 leading-snug">
-                  {slide.title}
-                </h3>
-                <p className="text-xs text-slate-600 mt-1 line-clamp-2 leading-relaxed">
-                  {slide.description}
-                </p>
+                  <div>
+                    <p className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 ${
+                      slide.image_url ? 'text-brand-300' : 'text-slate-500'
+                    }`}>
+                      {slide.badge}
+                    </p>
+                    <h3 className={`text-sm sm:text-base font-extrabold leading-snug line-clamp-1 ${
+                      slide.image_url ? 'text-white' : 'text-slate-900'
+                    }`}>
+                      {slide.title}
+                    </h3>
+                    <p className={`text-xs mt-1 line-clamp-2 leading-relaxed ${
+                      slide.image_url ? 'text-slate-200' : 'text-slate-600'
+                    }`}>
+                      {slide.description}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* Action bar */}
@@ -313,18 +457,109 @@ export function HeroSlidesModule() {
 
       {/* Form Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-lg">
           <form onSubmit={handleSubmit}>
             <DialogHeader>
               <DialogTitle>
                 {editingItem ? 'Ubah Slide Banner' : 'Tambah Slide Banner'}
               </DialogTitle>
               <DialogDescription>
-                Atur teks sambutan, badge promosi, dan nomor urutan tampil banner di frontend.
+                Unggah gambar banner (maks 5MB), teks sambutan, badge promosi, dan nomor urutan.
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-4 py-2">
+            <div className="space-y-4 py-2 max-h-[75vh] overflow-y-auto px-1">
+              {/* Image Upload Area */}
+              <div>
+                <label className="text-xs font-semibold text-slate-700 flex items-center justify-between mb-1.5">
+                  <span className="flex items-center gap-1.5">
+                    <ImageIcon className="w-4 h-4 text-brand-600" />
+                    Gambar Banner (Maks. 5MB, format JPG/PNG/WEBP/GIF)
+                  </span>
+                  {imagePreview && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="text-[11px] text-rose-500 hover:text-rose-700 font-semibold flex items-center gap-1"
+                    >
+                      <X className="w-3 h-3" />
+                      Hapus Gambar
+                    </button>
+                  )}
+                </label>
+
+                {imagePreview ? (
+                  <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 h-40 group">
+                    <img
+                      src={imagePreview}
+                      alt="Preview Banner"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="bg-white text-slate-800 text-xs gap-1.5"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <Upload className="w-3.5 h-3.5" />
+                        Ganti Gambar
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="danger"
+                        className="text-xs gap-1.5"
+                        onClick={handleRemoveImage}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        Hapus
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="border-2 border-dashed border-slate-200 hover:border-brand-400 bg-slate-50/70 hover:bg-brand-50/20 rounded-2xl p-5 text-center cursor-pointer transition flex flex-col items-center justify-center gap-2 group"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center group-hover:scale-105 transition">
+                      <Upload className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-slate-800">
+                        Klik untuk unggah gambar banner
+                      </p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        Hanya file gambar (JPG, PNG, WEBP, GIF) &bull; Ukuran maksimal 5MB
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+
+                {/* Direct URL input fallback */}
+                <div className="mt-2">
+                  <input
+                    type="url"
+                    placeholder="Atau tempel URL gambar eksternal di sini (opsional)..."
+                    value={formData.image_url || ''}
+                    onChange={(e) => {
+                      setFormData({ ...formData, image_url: e.target.value });
+                      if (!selectedFile) setImagePreview(e.target.value || null);
+                    }}
+                    className="w-full px-3 py-1.5 text-xs rounded-xl border border-slate-200 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="text-xs font-semibold text-slate-700">
                   Badge Atas <span className="text-rose-500">*</span>
@@ -346,7 +581,7 @@ export function HeroSlidesModule() {
                 <input
                   type="text"
                   required
-                  placeholder="Contoh: Welcome to Syafira Land! ✦˚𝜗𝜚.ᐟ"
+                  placeholder="Contoh: Welcome to Syafira Land!"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="mt-1 w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-semibold"
@@ -359,8 +594,8 @@ export function HeroSlidesModule() {
                 </label>
                 <textarea
                   required
-                  rows={3}
-                  placeholder="Contoh: Tempat paling nyaman buat top up game & langganan aplikasi premium dengan warna baru yang segar."
+                  rows={2}
+                  placeholder="Contoh: Tempat paling nyaman buat top up game & langganan aplikasi premium."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="mt-1 w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 leading-relaxed"
@@ -382,7 +617,7 @@ export function HeroSlidesModule() {
                 </div>
 
                 <div className="flex flex-col justify-end">
-                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200/60">
+                  <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200/60">
                     <span className="text-xs font-semibold text-slate-700">Status Tayang</span>
                     <Switch
                       checked={formData.is_active}
@@ -393,17 +628,18 @@ export function HeroSlidesModule() {
               </div>
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="pt-3 border-t border-slate-100">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => setDialogOpen(false)}
+                disabled={submitting}
               >
                 Batal
               </Button>
               <Button type="submit" size="sm" disabled={submitting}>
-                {submitting ? 'Menyimpan...' : editingItem ? 'Simpan Perubahan' : 'Tambah Banner'}
+                {submitting ? (uploadingImage ? 'Mengunggah Gambar...' : 'Menyimpan...') : editingItem ? 'Simpan Perubahan' : 'Tambah Banner'}
               </Button>
             </DialogFooter>
           </form>
