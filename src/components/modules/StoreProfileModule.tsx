@@ -16,6 +16,11 @@ import {
   ScrollText,
   Plus,
   Trash2,
+  Image as ImageIcon,
+  UploadCloud,
+  User,
+  Loader2,
+  X,
 } from 'lucide-react';
 
 export function StoreProfileModule() {
@@ -45,6 +50,8 @@ export function StoreProfileModule() {
     'legal, safe & guaranteed warranty ✦',
   ]);
   const [newMarqueeText, setNewMarqueeText] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const { toast } = useToast();
 
@@ -66,6 +73,7 @@ export function StoreProfileModule() {
         setBio(data.bio);
         setWhatsappNumber(data.whatsapp_number);
         setIsOpen(data.is_open);
+        setAvatarUrl(data.avatar_url || null);
         // Automatically take Goodies from current product count
         setStatGoodies(currentProdsCount > 0 ? String(currentProdsCount) : (data.stat_goodies || '0'));
         setStatFolls(data.stat_folls);
@@ -103,6 +111,40 @@ export function StoreProfileModule() {
     setMarqueeMessages(marqueeMessages.filter((_, idx) => idx !== index));
   };
 
+  const handleAvatarFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploadingAvatar(true);
+      const url = await storeProfileService.uploadAvatar(file);
+      setAvatarUrl(url);
+      toast({
+        title: 'Foto Profil Berhasil Dimuat',
+        description: 'Foto profil siap disimpan. Jangan lupa klik tombol Simpan Perubahan.',
+        variant: 'success',
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Gagal mengunggah foto profil';
+      toast({
+        title: 'Gagal Unggah Foto',
+        description: msg,
+        variant: 'error',
+      });
+    } finally {
+      setUploadingAvatar(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleRemoveAvatar = () => {
+    setAvatarUrl(null);
+    toast({
+      title: 'Foto Profil Dihapus',
+      description: 'Foto profil dikembalikan ke avatar default SVG. Klik Simpan untuk menerapkan.',
+    });
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -119,6 +161,7 @@ export function StoreProfileModule() {
         stat_folks: statFolks.trim(),
         announcement_text: announcementText.trim(),
         marquee_messages: marqueeMessages,
+        avatar_url: avatarUrl ? avatarUrl.trim() : null,
       };
 
       const updated = await storeProfileService.update(payload);
@@ -174,6 +217,103 @@ export function StoreProfileModule() {
       <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Store Profile & Contact */}
         <div className="lg:col-span-7 space-y-6">
+          {/* Card 0: Foto Profil / Avatar Toko (Upload & Preview) */}
+          <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-brand-600" />
+                <span>Foto Profil Toko (Section Profile FE)</span>
+              </h3>
+              {avatarUrl ? (
+                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                  Foto Aktif
+                </span>
+              ) : (
+                <span className="text-[10px] font-medium text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full border border-slate-200">
+                  Avatar Default
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+              {/* Avatar Preview */}
+              <div className="relative shrink-0">
+                <div className="w-24 h-24 rounded-full border-4 border-brand-200/60 bg-slate-50 flex items-center justify-center overflow-hidden shadow-md">
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt="Preview Foto Profil"
+                      className="w-full h-full object-cover object-center"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-slate-400">
+                      <User className="w-10 h-10 stroke-[1.5]" />
+                      <span className="text-[9px] font-medium mt-0.5">Default SVG</span>
+                    </div>
+                  )}
+                </div>
+                {avatarUrl && (
+                  <button
+                    type="button"
+                    onClick={handleRemoveAvatar}
+                    className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center shadow-sm transition"
+                    title="Hapus foto & kembali ke avatar default"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+
+              {/* Upload Controls */}
+              <div className="space-y-2.5 flex-1 text-center sm:text-left">
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                  <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 active:scale-[0.98] text-white font-bold text-xs shadow-sm transition">
+                    {uploadingAvatar ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Mengunggah...</span>
+                      </>
+                    ) : (
+                      <>
+                        <UploadCloud className="w-3.5 h-3.5" />
+                        <span>{avatarUrl ? 'Ganti Foto Profil' : 'Pilih & Unggah Foto'}</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      disabled={uploadingAvatar}
+                      onChange={handleAvatarFileChange}
+                      className="hidden"
+                    />
+                  </label>
+
+                  {avatarUrl && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleRemoveAvatar}
+                      className="text-xs h-9 text-rose-600 hover:bg-rose-50 border-rose-200"
+                    >
+                      <Trash2 className="w-3 h-3 mr-1" />
+                      <span>Hapus Foto</span>
+                    </Button>
+                  )}
+                </div>
+
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  Format gambar: <strong>JPG, PNG, WEBP, GIF</strong> (Maksimal <strong>5MB</strong>).
+                </p>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Foto ini otomatis tampil di kartu profil toko (ProfileCard) dan logo header pada frontend toko.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Card 1: Identitas & Bio Toko */}
           <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm space-y-4">
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">

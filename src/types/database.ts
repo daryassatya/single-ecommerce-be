@@ -127,6 +127,7 @@ export interface StoreProfile {
   stat_folks: string;
   announcement_text: string;
   marquee_messages: string[];
+  avatar_url?: string | null;
   updated_at: string;
 }
 
