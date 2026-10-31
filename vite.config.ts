@@ -4,6 +4,7 @@ import path from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
+  envPrefix: ['VITE_', 'Supabase', 'SUPABASE_'],
   plugins: [react()],
   resolve: {
     alias: {

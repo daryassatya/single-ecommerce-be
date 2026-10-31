@@ -3,9 +3,10 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 const DEFAULT_SUPABASE_URL = 'https://qbwqixbfkwdmfcungqom.supabase.co';
 const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_7m1y95HFH3U6WVT7yX_4iQ_kVu6-bhG';
 
-// 1. Check from build-time Vite environment variables, with fallback to default project credentials
-let rawUrl = import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
-let rawKey = import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
+// 1. Check from build-time Vite environment variables (supports VITE_SUPABASE_*, SupabaseURL, SupabaseAPI), with fallback to default project credentials
+const envRecord = import.meta.env as Record<string, string | undefined>;
+let rawUrl = envRecord.VITE_SUPABASE_URL || envRecord.SupabaseURL || envRecord.SUPABASE_URL || DEFAULT_SUPABASE_URL;
+let rawKey = envRecord.VITE_SUPABASE_ANON_KEY || envRecord.SupabaseAPI || envRecord.SUPABASE_ANON_KEY || envRecord.SUPABASE_KEY || DEFAULT_SUPABASE_ANON_KEY;
 
 // 2. Fallback to localStorage if custom credentials were saved
 if (typeof window !== 'undefined') {
