@@ -1,6 +1,6 @@
-# Syafira Store - Admin Dashboard & CMS
+# Cia Store - Admin Dashboard & CMS
 
-Aplikasi Admin Dashboard & Content Management System (CMS) modern untuk Syafira Store. Dibangun dengan **Vite + React (TypeScript)**, dipadukan dengan **Radix UI Primitives**, **Tailwind CSS**, dan **Lucide Icons**, serta terintegrasi penuh ke database PostgreSQL **Supabase** dan siap dideploy ke **Vercel (Vercel-Ready)**.
+Aplikasi Admin Dashboard & Content Management System (CMS) modern untuk Cia Store. Dibangun dengan **Vite + React (TypeScript)**, dipadukan dengan **Radix UI Primitives**, **Tailwind CSS**, dan **Lucide Icons**, serta terintegrasi penuh ke database PostgreSQL **Supabase** dan siap dideploy ke **Vercel (Vercel-Ready)**.
 
 ---
 

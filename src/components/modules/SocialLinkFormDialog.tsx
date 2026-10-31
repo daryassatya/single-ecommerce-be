@@ -96,7 +96,7 @@ export function SocialLinkFormDialog({
           <DialogHeader>
             <DialogTitle>{initialData ? 'Ubah Social & Quick Link' : 'Tambah Social & Quick Link'}</DialogTitle>
             <DialogDescription>
-              Kelola kartu tautan media sosial dan quick link toko seperti di frontend Syafira Store.
+              Kelola kartu tautan media sosial dan quick link toko seperti di frontend Cia Store.
             </DialogDescription>
           </DialogHeader>
 

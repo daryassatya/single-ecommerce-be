@@ -62,7 +62,7 @@ export function EnvConfigScreen() {
                   Solusi Instan: Hubungkan Sekarang (1-Klik)
                 </p>
                 <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
-                  Gunakan kredensial resmi Supabase Syafira Store yang telah disiapkan di bawah untuk masuk ke dashboard secara instan tanpa perlu menunggu redeploy Vercel.
+                  Gunakan kredensial resmi Supabase Cia Store yang telah disiapkan di bawah untuk masuk ke dashboard secara instan tanpa perlu menunggu redeploy Vercel.
                 </p>
               </div>
             </div>
@@ -73,7 +73,7 @@ export function EnvConfigScreen() {
               className="mt-3.5 w-full py-3 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-all shadow-md shadow-brand-500/20 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
             >
               <Sparkles className="w-4 h-4" />
-              <span>Simpan &amp; Masuk ke Dashboard Syafira</span>
+              <span>Simpan &amp; Masuk ke Dashboard Cia</span>
             </button>
           </div>
 
@@ -134,7 +134,7 @@ export function EnvConfigScreen() {
         </div>
 
         <p className="mt-6 text-center text-xs text-slate-400">
-          Syafira Store CMS &copy; 2026.
+          Cia Store CMS &copy; 2026.
         </p>
       </div>
     </div>

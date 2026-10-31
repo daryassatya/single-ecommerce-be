@@ -177,7 +177,7 @@ export function ProductTypesModule() {
             <span>Tipe Produk & Kategori</span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Kelola pengelompokan kategori produk untuk etalase toko Syafira Store.
+            Kelola pengelompokan kategori produk untuk etalase toko Cia Store.
           </p>
         </div>
 

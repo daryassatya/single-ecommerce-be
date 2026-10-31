@@ -46,7 +46,7 @@ export function HeroSlidesModule() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<HeroSlide | null>(null);
   const [formData, setFormData] = useState<HeroSlideInput>({
-    badge: 'SYAFIRA DIGITAL WORLD',
+    badge: 'CIA DIGITAL WORLD',
     title: '',
     description: '',
     sort_order: 1,
@@ -571,7 +571,7 @@ export function HeroSlidesModule() {
                 <input
                   type="text"
                   required
-                  placeholder="Contoh: SYAFIRA DIGITAL WORLD, FAST PROCESS 5-30 MINS"
+                  placeholder="Contoh: CIA DIGITAL WORLD, FAST PROCESS 5-30 MINS"
                   value={formData.badge}
                   onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
                   className="mt-1 w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
@@ -585,7 +585,7 @@ export function HeroSlidesModule() {
                 <input
                   type="text"
                   required
-                  placeholder="Contoh: Welcome to Syafira Land!"
+                  placeholder="Contoh: Welcome to Cia Land!"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="mt-1 w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-semibold"
@@ -656,7 +656,7 @@ export function HeroSlidesModule() {
           <AlertDialogHeader>
             <AlertDialogTitle>Hapus Slide Banner Ini?</AlertDialogTitle>
             <AlertDialogDescription>
-              Slide ini tidak akan lagi tampil pada carousel di beranda toko Syafira.
+              Slide ini tidak akan lagi tampil pada carousel di beranda toko Cia.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

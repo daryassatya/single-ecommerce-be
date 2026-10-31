@@ -21,7 +21,7 @@ export function AccountSettingsModule() {
   const { user, updateCredentials } = useAuth();
   const { toast } = useToast();
 
-  const [fullName, setFullName] = useState(user?.name || 'Syafira Prabandari');
+  const [fullName, setFullName] = useState(user?.name || 'Cia');
   const [email, setEmail] = useState(user?.email || 'prabandarisyafira@gmail.com');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');

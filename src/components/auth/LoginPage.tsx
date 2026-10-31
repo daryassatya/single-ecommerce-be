@@ -28,7 +28,7 @@ export function LoginPage() {
       if (res.success) {
         toast({
           title: 'Selamat Datang!',
-          description: 'Login berhasil. Mengakses dashboard admin Syafira Store...',
+          description: 'Login berhasil. Mengakses dashboard admin Cia Store...',
           variant: 'success',
         });
       } else {
@@ -60,7 +60,7 @@ export function LoginPage() {
             <Sparkles className="h-8 w-8" />
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-            Syafira Store
+            Cia Store
           </h2>
           <p className="mt-1.5 text-xs sm:text-sm font-medium text-slate-500">
             Admin Dashboard &amp; Content Management System
@@ -94,7 +94,7 @@ export function LoginPage() {
                   type="email"
                   autoComplete="email"
                   required
-                  placeholder="admin@syafirastore.com"
+                  placeholder="admin@ciastore.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="block w-full pl-10 pr-3.5 py-3 border border-slate-200 rounded-xl text-sm placeholder:text-slate-400 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all bg-slate-50/50 focus:bg-white"
@@ -159,7 +159,7 @@ export function LoginPage() {
 
         {/* Footer */}
         <p className="mt-8 text-center text-xs text-slate-400">
-          &copy; 2026 Syafira Store &bull; Sistem dibuat oleh{" "}
+          &copy; 2026 Cia Store &bull; Sistem dibuat oleh{" "}
           <a
             href="https://daryas.tech/"
             target="_blank"

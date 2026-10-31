@@ -428,7 +428,7 @@ export function TermsModule() {
                 <textarea
                   required
                   rows={3}
-                  placeholder="Contoh: 1. Silakan lakukan pembayaran setelah Admin Syafira mengirimkan rincian pesanan dan QRIS resmi."
+                  placeholder="Contoh: 1. Silakan lakukan pembayaran setelah Admin Cia mengirimkan rincian pesanan dan QRIS resmi."
                   value={formData.content}
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                   className="mt-1 w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 leading-relaxed"

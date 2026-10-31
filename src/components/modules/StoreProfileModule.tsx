@@ -29,7 +29,7 @@ export function StoreProfileModule() {
   const [saving, setSaving] = useState(false);
 
   // Form State
-  const [storeName, setStoreName] = useState('Syafira Store ✦˚𝜗𝜚.ᐟ');
+  const [storeName, setStoreName] = useState('Cia Store ✦˚𝜗𝜚.ᐟ');
   const [handle, setHandle] = useState('@oepalin');
   const [badgeText, setBadgeText] = useState('DIGITAL GOODIES & SOCIAL HUB');
   const [bio, setBio] = useState('');
@@ -40,12 +40,12 @@ export function StoreProfileModule() {
   const [statFolls, setStatFolls] = useState('3.2k');
   const [statFolks, setStatFolks] = useState('4.1k');
   const [announcementText, setAnnouncementText] = useState(
-    'Promo Syafira Store: Diskon Rp 2.000 untuk pembelian bundel Netflix + Canva Pro hari ini!'
+    'Promo Cia Store: Diskon Rp 2.000 untuk pembelian bundel Netflix + Canva Pro hari ini!'
   );
   const [marqueeMessages, setMarqueeMessages] = useState<string[]>([
     'check product details before ordering ✦',
-    'made with love & pixel magic by Syafira Store ✦',
-    'thank you for shopping small & supporting Syafira ✦',
+    'made with love & pixel magic by Cia Store ✦',
+    'thank you for shopping small & supporting Cia ✦',
     'fast response 5–30 minutes process ✦',
     'legal, safe & guaranteed warranty ✦',
   ]);
@@ -318,7 +318,7 @@ export function StoreProfileModule() {
           <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm space-y-4">
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
               <Sparkles className="w-4 h-4 text-brand-600" />
-              <span>Identitas &amp; Kartu Profil Syafira (ProfileCard)</span>
+              <span>Identitas &amp; Kartu Profil Cia (ProfileCard)</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -381,7 +381,7 @@ export function StoreProfileModule() {
                 className="mt-1 w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 leading-relaxed"
               />
               <p className="text-[11px] text-slate-400 mt-1">
-                Teks deskripsi lucu yang tampil di dalam kotak pastel kartu profil Syafira.
+                Teks deskripsi lucu yang tampil di dalam kotak pastel kartu profil Cia.
               </p>
             </div>
 
@@ -397,7 +397,7 @@ export function StoreProfileModule() {
                     Status Toko: {isOpen ? 'Buka (Open)' : 'Tutup Sementara (Closed)'}
                   </p>
                   <p className="text-[11px] text-emerald-800/80">
-                    {isOpen ? 'Yay, Syafira Store is open ♡' : 'Mohon maaf, toko sedang istirahat'}
+                    {isOpen ? 'Yay, Cia Store is open ♡' : 'Mohon maaf, toko sedang istirahat'}
                   </p>
                 </div>
               </div>

@@ -164,8 +164,8 @@ ON CONFLICT DO NOTHING;
 -- ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.store_profile (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    store_name VARCHAR(150) NOT NULL DEFAULT 'Syafira Store ✦˚𝜗𝜚.ᐟ',
-    handle VARCHAR(100) NOT NULL DEFAULT '@syafirastore',
+    store_name VARCHAR(150) NOT NULL DEFAULT 'Cia Store ✦˚𝜗𝜚.ᐟ',
+    handle VARCHAR(100) NOT NULL DEFAULT '@ciastore',
     badge_text VARCHAR(100) NOT NULL DEFAULT 'GAME AND APPS NEEDS',
     bio TEXT NOT NULL DEFAULT 'welcome bestie! 🦋 🎀 game needs & apps premium ✩💬👧🏻✨ trusted only ♡🌟 ִֶָ',
     whatsapp_number VARCHAR(50) NOT NULL DEFAULT '6281400688284',
@@ -173,11 +173,11 @@ CREATE TABLE IF NOT EXISTS public.store_profile (
     stat_goodies VARCHAR(50) NOT NULL DEFAULT '52',
     stat_folls VARCHAR(50) NOT NULL DEFAULT '3.2k',
     stat_folks VARCHAR(50) NOT NULL DEFAULT '4.1k',
-    announcement_text TEXT NOT NULL DEFAULT 'Promo Syafira Store: Diskon Rp 2.000 untuk pembelian bundel Netflix + Canva Pro hari ini!',
+    announcement_text TEXT NOT NULL DEFAULT 'Promo Cia Store: Diskon Rp 2.000 untuk pembelian bundel Netflix + Canva Pro hari ini!',
     marquee_messages TEXT[] NOT NULL DEFAULT ARRAY[
         'check product details before ordering ✦',
-        'made with love & pixel magic by Syafira Store ✦',
-        'thank you for shopping small & supporting Syafira ✦',
+        'made with love & pixel magic by Cia Store ✦',
+        'thank you for shopping small & supporting Cia ✦',
         'fast response 5–30 minutes process ✦',
         'legal, safe & guaranteed warranty ✦'
     ]::TEXT[],
@@ -198,8 +198,8 @@ CREATE POLICY "Allow full management on store_profile" ON public.store_profile
 INSERT INTO public.store_profile (id, store_name, handle, badge_text, bio, whatsapp_number, is_open, stat_goodies, stat_folls, stat_folks, announcement_text)
 VALUES (
     '33333333-3333-3333-3333-333333333333',
-    'Syafira Store ✦˚𝜗𝜚.ᐟ',
-    '@syafirastore',
+    'Cia Store ✦˚𝜗𝜚.ᐟ',
+    '@ciastore',
     'GAME AND APPS NEEDS',
     'welcome bestie! 🦋 🎀 game needs & apps premium ✩💬👧🏻✨ trusted only ♡🌟 ִֶָ',
     '6281400688284',
@@ -207,7 +207,7 @@ VALUES (
     '52',
     '3.2k',
     '4.1k',
-    'Promo Syafira Store: Diskon Rp 2.000 untuk pembelian bundel Netflix + Canva Pro hari ini!'
+    'Promo Cia Store: Diskon Rp 2.000 untuk pembelian bundel Netflix + Canva Pro hari ini!'
 )
 ON CONFLICT (id) DO UPDATE
 SET store_name = EXCLUDED.store_name, bio = EXCLUDED.bio, whatsapp_number = EXCLUDED.whatsapp_number;
