@@ -5,8 +5,6 @@ import { LoginPage } from '@/components/auth/LoginPage';
 import { Sidebar, NavTab } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { Sparkles, RefreshCw } from 'lucide-react';
-import { isSupabaseConfigured } from '@/lib/supabase';
-import { EnvConfigScreen } from '@/components/ui/EnvConfigScreen';
 
 // Code-splitting & Lazy-loading for all dashboard modules (Spec 3)
 const OverviewModule = lazy(() =>
@@ -136,10 +134,6 @@ function DashboardContent() {
 }
 
 export function App() {
-  if (!isSupabaseConfigured) {
-    return <EnvConfigScreen />;
-  }
-
   return (
     <ToastProvider>
       <AuthProvider>

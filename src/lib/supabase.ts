@@ -43,8 +43,8 @@ if (isSupabaseConfigured) {
   });
 } else {
   console.warn(
-    `[Supabase Configuration]: Variabel environment ${missingEnvVars.join(' dan ')} belum dikonfigurasi di Vercel. ` +
-    `Aplikasi menyediakan panduan setup interaktif agar tidak terjadi layar putih (blank screen).`
+    `[Supabase Configuration]: Variabel environment ${missingEnvVars.join(' dan ')} belum terdeteksi. ` +
+    `Pastikan VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY telah diatur.`
   );
   // Safe dummy client to prevent module initialization crashes
   clientInstance = createClient('https://placeholder.supabase.co', 'placeholder-anon-key', {
@@ -56,11 +56,3 @@ if (isSupabaseConfigured) {
 }
 
 export const supabase = clientInstance;
-
-export function saveManualSupabaseCredentials(url: string, key: string) {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('VITE_SUPABASE_URL', url.trim());
-    localStorage.setItem('VITE_SUPABASE_ANON_KEY', key.trim());
-    window.location.reload();
-  }
-}
