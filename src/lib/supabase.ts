@@ -1,11 +1,14 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-// 1. Check from build-time Vite environment variables
-let rawUrl = import.meta.env.VITE_SUPABASE_URL;
-let rawKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const DEFAULT_SUPABASE_URL = 'https://qbwqixbfkwdmfcungqom.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_7m1y95HFH3U6WVT7yX_4iQ_kVu6-bhG';
 
-// 2. Fallback to localStorage if deployed on Vercel without build-time env vars
-if ((!rawUrl || !rawKey) && typeof window !== 'undefined') {
+// 1. Check from build-time Vite environment variables, with fallback to default project credentials
+let rawUrl = import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+let rawKey = import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
+
+// 2. Fallback to localStorage if custom credentials were saved
+if (typeof window !== 'undefined') {
   try {
     const savedUrl = localStorage.getItem('VITE_SUPABASE_URL');
     const savedKey = localStorage.getItem('VITE_SUPABASE_ANON_KEY');
@@ -28,31 +31,13 @@ export const isSupabaseConfigured: boolean = Boolean(
   !rawUrl.includes('placeholder.supabase.co')
 );
 
-export const missingEnvVars: string[] = [];
-if (!rawUrl) missingEnvVars.push('VITE_SUPABASE_URL');
-if (!rawKey) missingEnvVars.push('VITE_SUPABASE_ANON_KEY');
-
-let clientInstance: SupabaseClient;
-
-if (isSupabaseConfigured) {
-  clientInstance = createClient(rawUrl.trim(), rawKey.trim(), {
+export const supabase: SupabaseClient = createClient(
+  rawUrl.trim(),
+  rawKey.trim(),
+  {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
     },
-  });
-} else {
-  console.warn(
-    `[Supabase Configuration]: Variabel environment ${missingEnvVars.join(' dan ')} belum terdeteksi. ` +
-    `Pastikan VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY telah diatur.`
-  );
-  // Safe dummy client to prevent module initialization crashes
-  clientInstance = createClient('https://placeholder.supabase.co', 'placeholder-anon-key', {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    },
-  });
-}
-
-export const supabase = clientInstance;
+  }
+);
