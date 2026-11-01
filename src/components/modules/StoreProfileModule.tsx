@@ -30,23 +30,23 @@ export function StoreProfileModule() {
 
   // Form State
   const [storeName, setStoreName] = useState('Contoh Nama Toko');
-  const [handle, setHandle] = useState('@oepalin');
-  const [badgeText, setBadgeText] = useState('DIGITAL GOODIES & SOCIAL HUB');
-  const [bio, setBio] = useState('Tempat paling nyaman buat langganan aplikasi premium & digital goodies dengan garansi penuh dan proses kilat 5–30 menit.');
-  const [whatsappNumber, setWhatsappNumber] = useState('6281400688284');
+  const [handle, setHandle] = useState('@contohtoko');
+  const [badgeText, setBadgeText] = useState('OFFICIAL STORE & DIGITAL CATALOG');
+  const [bio, setBio] = useState('Pusat penyedia produk digital, voucher game, dan langganan aplikasi premium terpercaya dengan garansi resmi dan proses instan.');
+  const [whatsappNumber, setWhatsappNumber] = useState('628888438922');
   const [isOpen, setIsOpen] = useState(true);
   const [productCount, setProductCount] = useState<number | null>(null);
-  const [statGoodies, setStatGoodies] = useState('56');
-  const [statFolls, setStatFolls] = useState('3.2k');
-  const [statFolks, setStatFolks] = useState('4.1k');
+  const [statGoodies, setStatGoodies] = useState('20');
+  const [statFolls, setStatFolls] = useState('5.4k');
+  const [statFolks, setStatFolks] = useState('12.8k');
   const [announcementText, setAnnouncementText] = useState(
-    'Katalog Baru! Beragam Aplikasi Premium siap diorder via WhatsApp Order ✨'
+    'Katalog Baru! 20 Produk Pilihan Siap Dipesan via WhatsApp 0888-8438-922 ✨'
   );
   const [marqueeMessages, setMarqueeMessages] = useState<string[]>([
-    'check product details before ordering 🛍️',
-    'made with love & pixel magic by Contoh Nama Toko 💜',
-    'QRIS All E-Wallet & All Bank Ready 💳',
-    'WhatsApp Order Ready 24/7 ✨',
+    'Selamat datang di Contoh Nama Toko — Layanan Cepat & Terpercaya 🛒',
+    'Layanan Pelanggan Aktif 24/7 via WhatsApp Resmi 💬',
+    'Semua transaksi aman menggunakan QRIS dan Bank Transfer 💳',
+    'Garansi transaksi resmi & bantuan CS siap sedia 🛡️',
   ]);
   const [newMarqueeText, setNewMarqueeText] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -462,7 +462,7 @@ export function StoreProfileModule() {
                   className="w-full text-center px-2 py-2 text-xs font-bold rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 />
                 <span className="text-[10px] text-slate-400 block mt-1">
-                  {productCount !== null ? `Diambil dari ${productCount} produk aktif` : 'Digital goodies'}
+                  {productCount !== null ? `Diambil dari ${productCount} produk aktif` : 'Total Produk'}
                 </span>
               </div>
 

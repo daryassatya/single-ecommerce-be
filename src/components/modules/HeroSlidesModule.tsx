@@ -585,7 +585,7 @@ export function HeroSlidesModule() {
                 <input
                   type="text"
                   required
-                  placeholder="Contoh: Welcome to Contoh Nama Toko!"
+                  placeholder="Contoh: Katalog Produk Digital Pilihan ✦"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="mt-1 w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 font-semibold"
@@ -599,7 +599,7 @@ export function HeroSlidesModule() {
                 <textarea
                   required
                   rows={2}
-                  placeholder="Contoh: Tempat paling nyaman buat top up game & langganan aplikasi premium."
+                  placeholder="Contoh: Temukan berbagai kebutuhan aplikasi premium & voucher game dengan penawaran terbaik."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="mt-1 w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 leading-relaxed"
