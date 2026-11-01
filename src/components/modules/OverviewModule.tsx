@@ -17,7 +17,6 @@ import {
   Sparkles,
   Heart,
   FileText,
-  Terminal,
   LayoutDashboard,
   RefreshCw,
 } from 'lucide-react';
@@ -288,32 +287,6 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
               Belum ada produk. Jalankan seed SQL di Supabase atau klik Tambah Produk.
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Tech Stack Info */}
-      <div className="rounded-2xl bg-slate-900 text-white p-6 shadow-md border border-slate-800">
-        <div className="flex items-center gap-2 mb-3 text-slate-400 text-xs font-bold uppercase tracking-wider">
-          <Terminal className="w-4 h-4 text-brand-400" />
-          Tech Stack & Deployment Specs
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-          <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
-            <span className="text-slate-400 block text-[10px]">Framework</span>
-            <span className="font-semibold text-slate-200">Vite + React (TS)</span>
-          </div>
-          <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
-            <span className="text-slate-400 block text-[10px]">Database</span>
-            <span className="font-semibold text-slate-200">Supabase (PostgreSQL)</span>
-          </div>
-          <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
-            <span className="text-slate-400 block text-[10px]">UI Primitives</span>
-            <span className="font-semibold text-slate-200">Radix UI + Tailwind</span>
-          </div>
-          <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">
-            <span className="text-slate-400 block text-[10px]">Hosting Target</span>
-            <span className="font-semibold text-slate-200">Vercel (SPA Rewrites)</span>
-          </div>
         </div>
       </div>
     </div>

@@ -7,7 +7,6 @@ import {
   MessageSquareText,
   Share2,
   Sliders,
-  ExternalLink,
   Sparkles,
   LogOut,
   Heart,
@@ -38,7 +37,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ currentTab, onTabChange, isOpen, onClose }: SidebarProps) {
-  const { logout, user } = useAuth();
+  const { logout } = useAuth();
 
   const menuItems = [
     { id: 'overview' as NavTab, label: 'Overview', icon: LayoutDashboard, badge: null },
@@ -155,32 +154,10 @@ export function Sidebar({ currentTab, onTabChange, isOpen, onClose }: SidebarPro
 
         {/* Sidebar footer */}
         <div className="p-4 border-t border-slate-100 bg-slate-50/50 shrink-0">
-          <div className="rounded-xl bg-white p-3 border border-slate-200/80 shadow-2xs">
-            <div className="flex items-center justify-between text-xs font-semibold text-slate-800">
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-100"></span>
-                Supabase Live
-              </span>
-              <span className="text-[10px] font-mono text-slate-400">v1.1</span>
-            </div>
-            <p className="mt-1 text-[11px] text-slate-500 truncate">
-              Login: {user?.email}
-            </p>
-            <a
-              href="https://supabase.com/dashboard"
-              target="_blank"
-              rel="noreferrer"
-              className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-brand-600 hover:underline"
-            >
-              Buka Supabase DB
-              <ExternalLink className="w-3 h-3" />
-            </a>
-          </div>
-
           <button
             type="button"
             onClick={logout}
-            className="mt-2.5 w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-rose-100 bg-white hover:bg-rose-50 text-rose-600 hover:text-rose-700 text-xs font-semibold transition-colors shadow-2xs"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-rose-100 bg-white hover:bg-rose-50 text-rose-600 hover:text-rose-700 text-xs font-semibold transition-colors shadow-2xs"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Keluar (Logout)</span>
