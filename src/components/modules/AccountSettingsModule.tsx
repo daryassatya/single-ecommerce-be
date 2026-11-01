@@ -12,9 +12,7 @@ import {
   KeyRound,
   CheckCircle2,
   AlertTriangle,
-  Users,
 } from 'lucide-react';
-import { SEEDED_ADMINS } from '@/services/adminAccountsService';
 import { triggerGlobalDisplayNotice } from '@/context/DisplayModeContext';
 
 export function AccountSettingsModule() {
@@ -91,39 +89,6 @@ export function AccountSettingsModule() {
                 <span className="text-slate-400">Autentikasi:</span>
                 <span className="font-semibold text-slate-800">Supabase & Local RLS</span>
               </div>
-            </div>
-          </div>
-
-          {/* Seeded Admins Card */}
-          <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm space-y-4">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-              <Users className="w-4 h-4 text-brand-600" />
-              <span>Daftar Akun Admin Sistem</span>
-            </h4>
-            <div className="space-y-2">
-              {SEEDED_ADMINS.map((adm, i) => {
-                const isCurrent = user?.email.toLowerCase() === adm.email.toLowerCase();
-                return (
-                  <div
-                    key={i}
-                    className={`p-3 rounded-2xl border text-xs transition-colors ${
-                      isCurrent
-                        ? 'border-brand-300 bg-brand-50/60'
-                        : 'border-slate-200/70 bg-slate-50/50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-800">{adm.name}</span>
-                      {isCurrent && (
-                        <span className="text-[10px] bg-brand-600 text-white font-semibold px-2 py-0.5 rounded-full">
-                          Akun Anda
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[11px] font-mono text-slate-500 mt-0.5">{adm.email}</p>
-                  </div>
-                );
-              })}
             </div>
           </div>
         </div>
