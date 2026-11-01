@@ -1,21 +1,18 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const DEFAULT_SUPABASE_URL = 'https://qbwqixbfkwdmfcungqom.supabase.co';
-const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_7m1y95HFH3U6WVT7yX_4iQ_kVu6-bhG';
-
-// 1. Check from build-time Vite environment variables (supports VITE_SUPABASE_*, SupabaseURL, SupabaseAPI), with fallback to default project credentials
+// 1. Ambil nilai murni dari environment variables (fokus utama: SupabaseURL & SupabaseAPI)
 const envRecord = import.meta.env as Record<string, string | undefined>;
-let rawUrl = envRecord.VITE_SUPABASE_URL || envRecord.SupabaseURL || envRecord.SUPABASE_URL || DEFAULT_SUPABASE_URL;
-let rawKey = envRecord.VITE_SUPABASE_ANON_KEY || envRecord.SupabaseAPI || envRecord.SUPABASE_ANON_KEY || envRecord.SUPABASE_KEY || DEFAULT_SUPABASE_ANON_KEY;
+let rawUrl = (envRecord.SupabaseURL || envRecord.VITE_SUPABASE_URL || envRecord.SUPABASE_URL || '').trim();
+let rawKey = (envRecord.SupabaseAPI || envRecord.VITE_SUPABASE_ANON_KEY || envRecord.SUPABASE_ANON_KEY || envRecord.SUPABASE_KEY || '').trim();
 
-// 2. Fallback to localStorage if custom credentials were saved
+// 2. Fallback ke localStorage jika kredensial kustom pernah disimpan pengguna
 if (typeof window !== 'undefined') {
   try {
-    const savedUrl = localStorage.getItem('VITE_SUPABASE_URL');
-    const savedKey = localStorage.getItem('VITE_SUPABASE_ANON_KEY');
+    const savedUrl = localStorage.getItem('SupabaseURL') || localStorage.getItem('VITE_SUPABASE_URL');
+    const savedKey = localStorage.getItem('SupabaseAPI') || localStorage.getItem('VITE_SUPABASE_ANON_KEY');
     if (savedUrl && savedKey) {
-      rawUrl = savedUrl;
-      rawKey = savedKey;
+      rawUrl = savedUrl.trim();
+      rawKey = savedKey.trim();
     }
   } catch (e) {
     console.warn('Unable to access localStorage:', e);
@@ -25,16 +22,19 @@ if (typeof window !== 'undefined') {
 export const isSupabaseConfigured: boolean = Boolean(
   rawUrl &&
   rawKey &&
-  typeof rawUrl === 'string' &&
-  typeof rawKey === 'string' &&
-  rawUrl.trim().length > 0 &&
-  rawKey.trim().length > 0 &&
+  rawUrl.length > 0 &&
+  rawKey.length > 0 &&
+  rawUrl.startsWith('http') &&
   !rawUrl.includes('placeholder.supabase.co')
 );
 
+// Inisialisasi client: jika env belum diatur, gunakan placeholder aman agar tidak crash saat startup
+const safeUrl = isSupabaseConfigured ? rawUrl : 'https://placeholder.supabase.co';
+const safeKey = isSupabaseConfigured ? rawKey : 'placeholder-anon-key';
+
 export const supabase: SupabaseClient = createClient(
-  rawUrl.trim(),
-  rawKey.trim(),
+  safeUrl,
+  safeKey,
   {
     auth: {
       persistSession: true,
