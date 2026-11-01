@@ -55,13 +55,21 @@ export function TermsModule() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  // Master switch status for displaying Terms & Conditions on frontend
+  const [showTerms, setShowTerms] = useState<boolean>(true);
+  const [togglingShowTerms, setTogglingShowTerms] = useState(false);
+
   const { toast } = useToast();
 
   const loadData = async () => {
     try {
       setLoading(true);
-      const data = await termsService.getAll();
+      const [data, settings] = await Promise.all([
+        termsService.getAll(),
+        termsService.getDisplaySettings(),
+      ]);
       setTerms(data);
+      setShowTerms(settings.show_terms);
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : 'Gagal memuat syarat & ketentuan';
       toast({
@@ -74,6 +82,30 @@ export function TermsModule() {
     }
   };
 
+  const handleToggleMasterShowTerms = async (checked: boolean) => {
+    try {
+      setTogglingShowTerms(true);
+      await termsService.toggleDisplayTerms(checked);
+      setShowTerms(checked);
+      toast({
+        title: checked ? 'Tombol T&C Diaktifkan' : 'Tombol T&C Dinonaktifkan',
+        description: checked
+          ? 'Tombol dan dialog Terms & Conditions kini aktif dan tampil di etalase web.'
+          : 'Tombol Terms & Conditions berhasil dinonaktifkan dan disembunyikan sepenuhnya dari etalase web.',
+        variant: checked ? 'success' : 'info',
+      });
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : 'Gagal mengubah status tampilan';
+      toast({
+        title: 'Gagal Mengubah Status',
+        description: errorMsg,
+        variant: 'error',
+      });
+    } finally {
+      setTogglingShowTerms(false);
+    }
+  };
+
   useEffect(() => {
     loadData();
   }, []);
@@ -83,6 +115,10 @@ export function TermsModule() {
       .filter((t) => t.category === selectedCategory && (!search || t.content.toLowerCase().includes(search.toLowerCase())))
       .sort((a, b) => a.sort_order - b.sort_order);
   }, [terms, selectedCategory, search]);
+
+  const totalActiveTerms = useMemo(() => {
+    return terms.filter((t) => t.is_active).length;
+  }, [terms]);
 
   // Responsive pagination (10 desktop, 5 mobile)
   const {
@@ -244,6 +280,56 @@ export function TermsModule() {
             <Plus className="w-4 h-4" />
             <span>Tambah Poin Aturan</span>
           </Button>
+        </div>
+      </div>
+
+      {/* Master Display Toggle Banner */}
+      <div className="rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-xs transition-colors ${
+              showTerms && totalActiveTerms > 0
+                ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/80 ring-4 ring-emerald-50/50'
+                : 'bg-slate-100 text-slate-400 border border-slate-200'
+            }`}>
+              <ClipboardCheck className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 font-fancy">
+                  Tampilkan Tombol Terms &amp; Conditions di Website
+                </h3>
+                <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                  showTerms && totalActiveTerms > 0
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    : 'bg-rose-50 text-rose-700 border border-rose-200'
+                }`}>
+                  {showTerms && totalActiveTerms > 0 ? 'Aktif (Tombol Muncul)' : 'Nonaktif (Tombol Tersembunyi)'}
+                </span>
+                <span className="text-[11px] text-slate-400 font-medium">
+                  &bull; {totalActiveTerms} dari {terms.length} poin aktif
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                {showTerms
+                  ? (totalActiveTerms > 0
+                      ? 'Tombol "Terms & Conditions" aktif dan tampil di hero carousel etalase website.'
+                      : 'Semua poin aturan sedang dinonaktifkan sehingga tombol otomatis disembunyikan dari website.')
+                  : 'Tombol "Terms & Conditions" dinonaktifkan secara manual dan tidak akan muncul sama sekali di etalase toko.'}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 self-end sm:self-auto shrink-0 pt-2 sm:pt-0">
+            <span className="text-xs font-semibold text-slate-600">
+              {showTerms ? 'Aktifkan Tombol' : 'Sembunyikan'}
+            </span>
+            <Switch
+              checked={showTerms}
+              onCheckedChange={handleToggleMasterShowTerms}
+              disabled={togglingShowTerms || loading}
+              aria-label="Toggle Tampilan Tombol Terms di Frontend"
+            />
+          </div>
         </div>
       </div>
 

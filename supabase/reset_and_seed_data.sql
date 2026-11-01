@@ -25,7 +25,7 @@ DELETE FROM public.product_types;
 -- Bersihkan modul CMS dan pengaturan toko lainnya
 DELETE FROM public.hero_slides;
 DELETE FROM public.testimonials;
-DELETE FROM public.store_terms;
+DELETE FROM public.terms_and_conditions;
 DELETE FROM public.social_media_links;
 DELETE FROM public.customer_message_settings;
 DELETE FROM public.store_profile;
@@ -362,9 +362,12 @@ END $$;
 -- ------------------------------------------------------------------------------
 -- 5. SEED PROFIL TOKO (STORE PROFILE DENGAN NOMOR WA 628888438922)
 -- ------------------------------------------------------------------------------
+-- Pastikan kolom show_terms tersedia pada tabel store_profile
+ALTER TABLE public.store_profile ADD COLUMN IF NOT EXISTS show_terms BOOLEAN NOT NULL DEFAULT TRUE;
+
 INSERT INTO public.store_profile (
     id, store_name, handle, badge_text, bio, whatsapp_number, is_open, 
-    stat_goodies, stat_folls, stat_folks, announcement_text, marquee_messages, avatar_url
+    stat_goodies, stat_folls, stat_folks, announcement_text, marquee_messages, avatar_url, show_terms
 )
 VALUES (
     '33333333-3333-3333-3333-333333333333',
@@ -384,7 +387,8 @@ VALUES (
         'Semua transaksi aman menggunakan QRIS dan Bank Transfer 💳',
         'Garansi transaksi resmi & bantuan CS siap sedia 🛡️'
     ]::TEXT[],
-    NULL
+    NULL,
+    TRUE
 )
 ON CONFLICT (id) DO UPDATE SET 
     store_name = EXCLUDED.store_name,
@@ -399,6 +403,7 @@ ON CONFLICT (id) DO UPDATE SET
     announcement_text = EXCLUDED.announcement_text,
     marquee_messages = EXCLUDED.marquee_messages,
     avatar_url = EXCLUDED.avatar_url,
+    show_terms = EXCLUDED.show_terms,
     updated_at = now();
 
 -- ------------------------------------------------------------------------------
@@ -449,9 +454,9 @@ VALUES
     ('Kevin Sanjaya', 'Verified Buyer', 5, 'Steam Wallet IDR Code', 'Kode voucher langsung masuk detik itu juga pas bayar via QRIS. Mantap sekali!', '2 minggu lalu', 6, TRUE);
 
 -- ------------------------------------------------------------------------------
--- 10. SEED ATURAN TOKO (STORE TERMS & CONDITIONS)
+-- 10. SEED ATURAN TOKO (TERMS & CONDITIONS)
 -- ------------------------------------------------------------------------------
-INSERT INTO public.store_terms (category, rule_text, sort_order, is_active)
+INSERT INTO public.terms_and_conditions (category, content, sort_order, is_active)
 VALUES
     ('apps', '1. Silakan lakukan pembayaran setelah Admin mengirimkan rincian pesanan dan QRIS resmi.', 1, TRUE),
     ('apps', '2. Wajib mengirimkan bukti pembayaran berupa tangkapan layar (screenshot) kepada Admin via WhatsApp 0888-8438-922.', 2, TRUE),

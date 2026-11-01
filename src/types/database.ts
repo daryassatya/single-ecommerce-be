@@ -128,6 +128,7 @@ export interface StoreProfile {
   announcement_text: string;
   marquee_messages: string[];
   avatar_url?: string | null;
+  show_terms?: boolean;
   updated_at: string;
 }
 

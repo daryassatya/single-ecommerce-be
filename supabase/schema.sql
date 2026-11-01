@@ -169,6 +169,7 @@ CREATE TABLE IF NOT EXISTS public.store_profile (
         'Garansi transaksi resmi & bantuan CS siap sedia 🛡️'
     ]::TEXT[],
     avatar_url TEXT DEFAULT NULL,
+    show_terms BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
 );
