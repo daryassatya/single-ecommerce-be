@@ -444,14 +444,14 @@ VALUES
 -- ------------------------------------------------------------------------------
 -- 9. SEED ULASAN PELANGGAN (TESTIMONIALS)
 -- ------------------------------------------------------------------------------
-INSERT INTO public.testimonials (customer_name, customer_role, rating, product_name, review_text, review_date, sort_order, is_active)
+INSERT INTO public.testimonials (name, product, text, is_approved)
 VALUES
-    ('Rian Pratama', 'Verified Buyer', 5, 'Netflix Premium UHD 4K', 'Prosesnya cepat banget, ga sampai 5 menit akun langsung aktif. Kualitas 4K lancar tanpa kendala!', '2 hari lalu', 1, TRUE),
-    ('Siti Rahmania', 'Verified Buyer', 5, 'Canva Pro', 'Admin ramah dan responsif. Canva Pro langsung masuk ke email pribadi, sangat membantu kerjaan desain.', '3 hari lalu', 2, TRUE),
-    ('Dimas Anggara', 'Verified Buyer', 5, 'Mobile Legends Diamonds', 'Top up diamond kilat dan legal 100%, harga bersaing banget dibanding toko lain. Recommended!', '5 hari lalu', 3, TRUE),
-    ('Nadia Safitri', 'Verified Buyer', 5, 'Spotify Premium', 'Langganan Spotify individual setahun aman sentosa, no hold no banned. Pelayanan bintang lima!', '1 minggu lalu', 4, TRUE),
-    ('Budi Santoso', 'Verified Buyer', 5, 'ChatGPT Plus (GPT-4o)', 'Akses AI lancar untuk riset dan kerjaan kantor. Panduannya jelas dan CS-nya sabar banget.', '1 minggu lalu', 5, TRUE),
-    ('Kevin Sanjaya', 'Verified Buyer', 5, 'Steam Wallet IDR Code', 'Kode voucher langsung masuk detik itu juga pas bayar via QRIS. Mantap sekali!', '2 minggu lalu', 6, TRUE);
+    ('Rian Pratama', 'Netflix Premium UHD 4K', 'Prosesnya cepat banget, ga sampai 5 menit akun langsung aktif. Kualitas 4K lancar tanpa kendala!', TRUE),
+    ('Siti Rahmania', 'Canva Pro', 'Admin ramah dan responsif. Canva Pro langsung masuk ke email pribadi, sangat membantu kerjaan desain.', TRUE),
+    ('Dimas Anggara', 'Mobile Legends Diamonds', 'Top up diamond kilat dan legal 100%, harga bersaing banget dibanding toko lain. Recommended!', TRUE),
+    ('Nadia Safitri', 'Spotify Premium', 'Langganan Spotify individual setahun aman sentosa, no hold no banned. Pelayanan bintang lima!', TRUE),
+    ('Budi Santoso', 'ChatGPT Plus (GPT-4o)', 'Akses AI lancar untuk riset dan kerjaan kantor. Panduannya jelas dan CS-nya sabar banget.', TRUE),
+    ('Kevin Sanjaya', 'Steam Wallet IDR Code', 'Kode voucher langsung masuk detik itu juga pas bayar via QRIS. Mantap sekali!', TRUE);
 
 -- ------------------------------------------------------------------------------
 -- 10. SEED ATURAN TOKO (TERMS & CONDITIONS)
