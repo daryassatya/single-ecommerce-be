@@ -17,7 +17,7 @@ const DEFAULT_QRIS_TEMPLATE = `Halo Admin, saya sudah melakukan pembayaran melal
 Berikut saya lampirkan screenshot bukti pembayarannya. Mohon diproses ya, terima kasih!`;
 
 const VARIABLE_GUIDES = [
-  { token: '{orderId}', desc: 'Nomor pesanan unik (contoh: CIA-MVV9WVA0)', highlight: true },
+  { token: '{orderId}', desc: 'Nomor pesanan unik (contoh: ORD-MVV9WVA0)', highlight: true },
   { token: '{daftar_item}', desc: 'Daftar rincian produk dari keranjang (- Produk (Jenis - Opsi) x Qty = Subtotal)', highlight: true },
   { token: '{totalAmount}', desc: 'Total nominal pembayaran (contoh: Rp20.000)', highlight: true },
   { token: '{paymentMethod}', desc: 'Metode pembayaran (QRIS (Semua E-Wallet & Bank))', highlight: true },
@@ -135,7 +135,7 @@ export function CustomerMessageModule() {
 - Canva Pro (Member - 1 Bulan) x 1 = Rp12.000`;
 
   const previewText = template
-    .replace(/\{orderId\}/g, 'CIA-MVV9WVA0')
+    .replace(/\{orderId\}/g, 'ORD-MVV9WVA0')
     .replace(/\{daftar_item\}/g, simulatedOrderItems)
     .replace(/\{items\}/g, simulatedOrderItems)
     .replace(/\{totalAmount\}/g, 'Rp47.000')
@@ -275,7 +275,7 @@ export function CustomerMessageModule() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-600">
                   <div>
-                    <span className="font-mono font-bold text-brand-700">{"{orderId}"}</span> : Nomor pesanan unik (contoh: CIA-MVV9WVA0)
+                    <span className="font-mono font-bold text-brand-700">{"{orderId}"}</span> : Nomor pesanan unik (contoh: ORD-MVV9WVA0)
                   </div>
                   <div>
                     <span className="font-mono font-bold text-brand-700">{"{totalAmount}"}</span> : Total nominal (contoh: Rp20.000)

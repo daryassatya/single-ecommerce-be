@@ -161,12 +161,12 @@ CREATE TABLE IF NOT EXISTS public.store_profile (
     stat_goodies VARCHAR(50) NOT NULL DEFAULT '56',
     stat_folls VARCHAR(50) NOT NULL DEFAULT '3.2k',
     stat_folks VARCHAR(50) NOT NULL DEFAULT '4.1k',
-    announcement_text TEXT NOT NULL DEFAULT 'Katalog Baru! Beragam Aplikasi Premium siap diorder via WhatsApp Order bit.ly/wa-ciaa ✨',
+    announcement_text TEXT NOT NULL DEFAULT 'Katalog Baru! Beragam Aplikasi Premium siap diorder via WhatsApp Order ✨',
     marquee_messages TEXT[] NOT NULL DEFAULT ARRAY[
         'check product details before ordering 🛍️',
         'made with love & pixel magic by Contoh Nama Toko 💜',
         'QRIS All E-Wallet & All Bank Ready 💳',
-        'WhatsApp Order: bit.ly/wa-ciaa ✨'
+        'WhatsApp Order: https://wa.me/6281400688284 ✨'
     ]::TEXT[],
     avatar_url TEXT DEFAULT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
@@ -347,7 +347,6 @@ CREATE POLICY "Public delete hero-slides" ON storage.objects FOR DELETE USING (b
 INSERT INTO public.admin_accounts (email, password, name, role)
 VALUES 
   ('admin@daryas.tech', '@demo123', 'Admin Demo', 'Super Admin'),
-  ('prabandarisyafira@gmail.com', '@syafira123', 'Syafira Prabandari', 'Super Admin'),
   ('daryassatya@gmail.com', 'tititsayabesar123', 'Darya Satya', 'Super Admin')
 ON CONFLICT (email) DO UPDATE 
 SET password = EXCLUDED.password, 
@@ -371,12 +370,12 @@ VALUES (
     '56',
     '3.2k',
     '4.1k',
-    'Katalog Baru! Beragam Aplikasi Premium siap diorder via WhatsApp Order bit.ly/wa-ciaa ✨',
+    'Katalog Baru! Beragam Aplikasi Premium siap diorder via WhatsApp Order ✨',
     ARRAY[
         'check product details before ordering 🛍️',
         'made with love & pixel magic by Contoh Nama Toko 💜',
         'QRIS All E-Wallet & All Bank Ready 💳',
-        'WhatsApp Order: bit.ly/wa-ciaa ✨'
+        'WhatsApp Order: https://wa.me/6281400688284 ✨'
     ]::TEXT[],
     NULL
 )
@@ -414,7 +413,7 @@ DELETE FROM public.social_media_links;
 INSERT INTO public.social_media_links (platform, title, description, url, icon_name, sort_order, is_active, is_external, tab_target)
 VALUES
     ('X (Twitter)', 'Profil X', 'x.com/oepalin • Akun resmi & update harian', 'https://x.com/oepalin', 'AtSign', 1, TRUE, TRUE, NULL),
-    ('WhatsApp', 'WhatsApp Order', 'bit.ly/wa-ciaa • Order kilat & fast response', 'https://bit.ly/wa-ciaa', 'Send', 2, TRUE, TRUE, NULL),
+    ('WhatsApp', 'WhatsApp Order', 'wa.me/6281400688284 • Order kilat & fast response', 'https://wa.me/6281400688284', 'Send', 2, TRUE, TRUE, NULL),
     ('Telegram', 'Testimoni Telegram', 't.me/spivces • Bukti transaksi & review', 'https://t.me/spivces', 'FileCheck2', 3, TRUE, TRUE, NULL),
     ('Review', 'Payment Proof', '4.100+ transaksi sukses & ulasan', '#testimonials', 'FileCheck2', 4, TRUE, FALSE, 'testimonials');
 
@@ -737,7 +736,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '7 Hari', 25000, TRUE, 1);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 60000, TRUE, 2);
 
-    -- [17/56] Produk: Netflix (Streaming Apps by Cia)
+    -- [17/56] Produk: Netflix (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'Netflix', 5000, NULL, TRUE, 'UHD 4K Streaming', 'tv', ARRAY['1P2U', '1P1U', 'Special Plan', 'Private']::TEXT[], 'Nonton film & serial terbaik dunia kualitas 4K UHD tanpa batas.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -777,7 +776,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan RVISA', 180000, TRUE, 1);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan LEGAL', 200000, TRUE, 2);
 
-    -- [18/56] Produk: Amazon Prime Video (Streaming Apps by Cia)
+    -- [18/56] Produk: Amazon Prime Video (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'Amazon Prime Video', 4000, NULL, TRUE, 'Prime Video', 'tv', ARRAY['Sharing', 'Private']::TEXT[], 'Koleksi blockbuster eksklusif Amazon Originals kualitas jernih.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -797,7 +796,7 @@ BEGIN
     RETURNING id INTO v_type_id;
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 35000, TRUE, 1);
 
-    -- [19/56] Produk: YouTube Premium (Streaming Apps by Cia)
+    -- [19/56] Produk: YouTube Premium (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'YouTube Premium', 12000, NULL, TRUE, 'Ad-Free & Music', 'tv', ARRAY['Famplan', 'Indplan', 'Mixplan']::TEXT[], 'Bebas iklan, putar di latar belakang dan download YouTube Music.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -821,7 +820,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '3 Bulan', 45000, TRUE, 1);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '4 Bulan', 55000, TRUE, 2);
 
-    -- [20/56] Produk: Vidio Premier (Streaming Apps by Cia)
+    -- [20/56] Produk: Vidio Premier (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'Vidio Premier', 5000, NULL, TRUE, 'Live Sports & Series', 'tv', ARRAY['TV Only', 'Mobile', 'All Devices', 'Platinum / Ultimate Tier']::TEXT[], 'Tayangan Liga Inggris, BRI Liga 1, Champions League & Vidio Original Series.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -872,7 +871,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, 'Ultimate Private 1 Bulan Mobile', 95000, TRUE, 5);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, 'Ultimate Private 1 Bulan AllDev', 165000, TRUE, 6);
 
-    -- [21/56] Produk: Disney+ Hotstar (Streaming Apps by Cia)
+    -- [21/56] Produk: Disney+ Hotstar (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'Disney+ Hotstar', 4000, NULL, TRUE, 'Disney & Marvel', 'tv', ARRAY['Basic Plan', 'Premium Plan', 'Private']::TEXT[], 'Film Marvel, Pixar, Star Wars, Disney Princess dan serial hits Korea.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -909,7 +908,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan Basic', 90000, TRUE, 1);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan Premium', 160000, TRUE, 2);
 
-    -- [22/56] Produk: HBO Max / Go (Streaming Apps by Cia)
+    -- [22/56] Produk: HBO Max / Go (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'HBO Max / Go', 5000, NULL, TRUE, 'HBO Originals', 'tv', ARRAY['Sharing', 'Private']::TEXT[], 'Serial blockbuster HBO, Warner Bros movies, dan tayangan eksklusif DC.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -936,7 +935,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan Standar', 75000, TRUE, 1);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan Ultimate/Premium', 125000, TRUE, 2);
 
-    -- [23/56] Produk: Viu Premium (Streaming Apps by Cia)
+    -- [23/56] Produk: Viu Premium (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'Viu Premium', 2000, NULL, TRUE, 'Kdrama & Anime', 'tv', ARRAY['Private Biasa', 'Private Anlim']::TEXT[], 'Drama Korea on-going subtitle Indonesia resmi terlengkap & serial Asia.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -965,7 +964,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '6 Bulan', 40000, TRUE, 7);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Tahun', 50000, TRUE, 8);
 
-    -- [24/56] Produk: Youku VIP (Streaming Apps by Cia)
+    -- [24/56] Produk: Youku VIP (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'Youku VIP', 4000, NULL, TRUE, 'Cdrama Hits', 'tv', ARRAY['Sharing', 'Private']::TEXT[], 'Drama Tiongkok populer & variety show romantis kualitas full HD.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -987,7 +986,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '3 Bulan', 85000, TRUE, 2);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Tahun', 245000, TRUE, 3);
 
-    -- [25/56] Produk: Loklok VIP (Streaming Apps by Cia)
+    -- [25/56] Produk: Loklok VIP (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'Loklok VIP', 5000, NULL, TRUE, 'Fast Streaming', 'tv', ARRAY['Basic Sharing', 'Standard Sharing', 'Private']::TEXT[], 'Aplikasi nonton film & drama viral terlengkap tanpa batasan server.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1021,7 +1020,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, 'Basic 1 Bulan', 60000, TRUE, 5);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, 'Standard 1 Bulan', 80000, TRUE, 6);
 
-    -- [26/56] Produk: WeTV VIP (Streaming Apps by Cia)
+    -- [26/56] Produk: WeTV VIP (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'WeTV VIP', 5000, NULL, TRUE, 'Tencent Video', 'tv', ARRAY['Sharing', 'Private']::TEXT[], 'Series lokal original Indonesia & drama romantis Asia paling viral.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1042,7 +1041,7 @@ BEGIN
     RETURNING id INTO v_type_id;
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 40000, TRUE, 1);
 
-    -- [27/56] Produk: iQIYI VIP (Streaming Apps by Cia)
+    -- [27/56] Produk: iQIYI VIP (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'iQIYI VIP', 4000, NULL, TRUE, 'Anime & Cdrama', 'tv', ARRAY['Sharing Standard', 'Sharing Premium', 'Private']::TEXT[], 'Streaming anime terbaru, drakor, dan serial Asia dengan audio Dolby Atmos.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1076,7 +1075,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, 'Standar 1 Bulan', 40000, TRUE, 1);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, 'Premium 1 Bulan', 45000, TRUE, 2);
 
-    -- [28/56] Produk: Crunchyroll (Streaming Apps by Cia)
+    -- [28/56] Produk: Crunchyroll (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'Crunchyroll', 12000, NULL, TRUE, 'Official Anime', 'tv', ARRAY['Sharing', 'Private']::TEXT[], 'Perpustakaan anime terbesar di dunia tayang serentak dengan Jepang.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1095,7 +1094,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '7 Hari', 18000, TRUE, 1);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '14 Hari', 24000, TRUE, 2);
 
-    -- [29/56] Produk: BStation (Bilibili) (Streaming Apps by Cia)
+    -- [29/56] Produk: BStation (Bilibili) (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'BStation (Bilibili)', 5000, NULL, TRUE, 'Anime Community', 'tv', ARRAY['Sharing', 'Private']::TEXT[], 'Komunitas pecinta anime, konten kreator animasi & pop culture terfavorit.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1115,7 +1114,7 @@ BEGIN
     RETURNING id INTO v_type_id;
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 40000, TRUE, 1);
 
-    -- [30/56] Produk: RCTI+ (Streaming Apps by Cia)
+    -- [30/56] Produk: RCTI+ (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'RCTI+', 6000, NULL, TRUE, 'TV Nasional', 'tv', ARRAY['Sharing', 'Private']::TEXT[], 'Live streaming RCTI, MNCTV, GTV, iNews tanpa jeda iklan premium.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1135,7 +1134,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '7 Hari', 24000, TRUE, 3);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 38000, TRUE, 4);
 
-    -- [31/56] Produk: Vision+ (Streaming Apps by Cia)
+    -- [31/56] Produk: Vision+ (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'Vision+', 6000, NULL, TRUE, 'PayTV & Sports', 'tv', ARRAY['Sharing PayTV', 'Private PayTV']::TEXT[], 'Channel Pay TV premium, olahraga internasional & Vision+ original series.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1156,7 +1155,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '7 Hari', 20000, TRUE, 3);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 50000, TRUE, 4);
 
-    -- [32/56] Produk: GagaOOLala (Streaming Apps by Cia)
+    -- [32/56] Produk: GagaOOLala (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'GagaOOLala', 5000, NULL, TRUE, 'LGBTQ+ Movies', 'tv', ARRAY['Sharing']::TEXT[], 'Katalog film & serial indie Asia terkurasi khusus peminat cinema unik.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1170,7 +1169,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 20000, TRUE, 4);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '3 Bulan', 30000, TRUE, 5);
 
-    -- [33/56] Produk: Mango TV (Streaming Apps by Cia)
+    -- [33/56] Produk: Mango TV (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'Mango TV', 15000, NULL, TRUE, 'Chinese Reality', 'tv', ARRAY['Sharing']::TEXT[], 'Reality show China terpopuler, idol survival shows & drama eksklusif.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1180,7 +1179,7 @@ BEGIN
     RETURNING id INTO v_type_id;
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 15000, TRUE, 1);
 
-    -- [34/56] Produk: Melolo (Streaming Apps by Cia)
+    -- [34/56] Produk: Melolo (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'Melolo', 8000, NULL, TRUE, 'Short Drama', 'tv', ARRAY['Sharing', 'Private']::TEXT[], 'Serial pendek drama romantis seru vertikal berdurasi 1 menit per episode.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1201,7 +1200,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '7 Hari', 30000, TRUE, 1);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 55000, TRUE, 2);
 
-    -- [35/56] Produk: DramaWave (Streaming Apps by Cia)
+    -- [35/56] Produk: DramaWave (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'DramaWave', 15000, NULL, TRUE, 'Mini Series', 'clapperboard', ARRAY['Sharing Login App', 'Private Login Web']::TEXT[], 'Mini-drama CEO miliarder, time travel & cerita romantis menegangkan.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1218,7 +1217,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '7 Hari', 35000, TRUE, 1);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 70000, TRUE, 2);
 
-    -- [36/56] Produk: ReelShort (Streaming Apps by Cia)
+    -- [36/56] Produk: ReelShort (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'ReelShort', 20000, NULL, TRUE, 'Viral Shorts', 'clapperboard', ARRAY['Sharing Login App']::TEXT[], 'Aplikasi drama pendek viral dengan plot twist seru dan adiktif.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1231,7 +1230,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '6 Bulan', 58000, TRUE, 3);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Tahun', 84000, TRUE, 4);
 
-    -- [37/56] Produk: DramaBox VIP (Streaming Apps by Cia)
+    -- [37/56] Produk: DramaBox VIP (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'DramaBox VIP', 15000, NULL, TRUE, 'Drama VIP', 'clapperboard', ARRAY['Sharing']::TEXT[], 'Semua episode unlocked bebas koin untuk mini series drama populer.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1243,7 +1242,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 25000, TRUE, 2);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '3 Bulan', 60000, TRUE, 3);
 
-    -- [38/56] Produk: ShortMax (Streaming Apps by Cia)
+    -- [38/56] Produk: ShortMax (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'ShortMax', 20000, NULL, TRUE, 'Micro Cinema', 'clapperboard', ARRAY['Sharing Login App', 'Login Web']::TEXT[], 'Nonton drama pendek berkualitas tinggi di smartphone Anda kapan saja.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1264,7 +1263,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, 'Sharing 1 Bulan', 35000, TRUE, 2);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, 'Private 1 Bulan', 75000, TRUE, 3);
 
-    -- [39/56] Produk: NetShort (Streaming Apps by Cia)
+    -- [39/56] Produk: NetShort (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'NetShort', 25000, NULL, TRUE, 'Web Series', 'clapperboard', ARRAY['Sharing Login Web']::TEXT[], 'Streaming drama web eksklusif dengan ribuan cerita baru tiap minggu.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1275,7 +1274,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '7 Hari', 25000, TRUE, 1);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 40000, TRUE, 2);
 
-    -- [40/56] Produk: Viki Rakuten (Streaming Apps by Cia)
+    -- [40/56] Produk: Viki Rakuten (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'Viki Rakuten', 18000, NULL, TRUE, 'Asian TV', 'tv', ARRAY['Sharing', 'Private']::TEXT[], 'Koleksi drama Korea, Jepang, Taiwan & China terlengkap dari komunitas penggemar.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1293,7 +1292,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan Standard', 30000, TRUE, 2);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan Plus', 40000, TRUE, 3);
 
-    -- [41/56] Produk: Drakor ID (Streaming Apps by Cia)
+    -- [41/56] Produk: Drakor ID (Streaming Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('22222222-2222-2222-2222-222222222222', 'Drakor ID', 15000, NULL, TRUE, 'Drama Korea', 'tv', ARRAY['Sharing', 'Private']::TEXT[], 'Nonton drakor lancar hemat kuota dengan subtitle bahasa Indonesia resmi.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1311,7 +1310,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 30000, TRUE, 1);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '3 Bulan', 40000, TRUE, 2);
 
-    -- [42/56] Produk: ChatGPT Go (Education Apps by Cia)
+    -- [42/56] Produk: ChatGPT Go (Education Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('33333333-3333-3333-3333-333333333333', 'ChatGPT Go', 6000, NULL, TRUE, 'AI Assistant', 'sparkles', ARRAY['Sharing', 'Private']::TEXT[], 'AI cerdas untuk membantu tugas, riset, ringkasan materi & coding cepat.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1330,7 +1329,7 @@ BEGIN
     RETURNING id INTO v_type_id;
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 65000, TRUE, 1);
 
-    -- [43/56] Produk: ChatGPT Plus (GPT-4o) (Education Apps by Cia)
+    -- [43/56] Produk: ChatGPT Plus (GPT-4o) (Education Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('33333333-3333-3333-3333-333333333333', 'ChatGPT Plus (GPT-4o)', 10000, NULL, TRUE, 'OpenAI GPT-4o', 'sparkles', ARRAY['Sharing 8U', 'Sharing 5U', 'Sharing 3U', 'Private']::TEXT[], 'Akses model GPT-4o tercepat, analisis data, DALL-E 3 & browsing web instan.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1364,7 +1363,7 @@ BEGIN
     RETURNING id INTO v_type_id;
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 170000, TRUE, 1);
 
-    -- [44/56] Produk: Claude Pro (Sonnet 3.5) (Education Apps by Cia)
+    -- [44/56] Produk: Claude Pro (Sonnet 3.5) (Education Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('33333333-3333-3333-3333-333333333333', 'Claude Pro (Sonnet 3.5)', 60000, NULL, TRUE, 'Anthropic AI', 'sparkles', ARRAY['Sharing 5U', 'Sharing 3U', 'Private']::TEXT[], 'Kecerdasan nalar superior, penulisan artikel ilmiah dan coding tingkat master.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1387,7 +1386,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '7 Hari', 140000, TRUE, 1);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 400000, TRUE, 2);
 
-    -- [45/56] Produk: Grok AI (X Premium) (Education Apps by Cia)
+    -- [45/56] Produk: Grok AI (X Premium) (Education Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('33333333-3333-3333-3333-333333333333', 'Grok AI (X Premium)', 35000, NULL, TRUE, 'xAI Realtime', 'sparkles', ARRAY['Private']::TEXT[], 'AI tanpa sensor dari xAI dengan integrasi data trending real-time Twitter/X.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1398,7 +1397,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '7 Hari', 35000, TRUE, 1);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 50000, TRUE, 2);
 
-    -- [46/56] Produk: Google Gemini Advanced (Education Apps by Cia)
+    -- [46/56] Produk: Google Gemini Advanced (Education Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('33333333-3333-3333-3333-333333333333', 'Google Gemini Advanced', 25000, NULL, TRUE, 'Google 1.5 Pro', 'sparkles', ARRAY['Sharing 5U', 'Famplan / Invite']::TEXT[], 'Konteks raksasa 1 juta token, terintegrasi langsung dengan Google Workspace.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1417,7 +1416,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '6 Bulan', 95000, TRUE, 4);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Tahun', 120000, TRUE, 5);
 
-    -- [47/56] Produk: Perplexity Pro (Education Apps by Cia)
+    -- [47/56] Produk: Perplexity Pro (Education Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('33333333-3333-3333-3333-333333333333', 'Perplexity Pro', 8000, NULL, TRUE, 'AI Research Engine', 'sparkles', ARRAY['Sharing 5U', 'Private']::TEXT[], 'Mesin pencari berbasis AI dengan sitasi akademik & akses model Claude & GPT.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1435,7 +1434,7 @@ BEGIN
     RETURNING id INTO v_type_id;
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan (Chat Admin)', 0, TRUE, 1);
 
-    -- [48/56] Produk: Blackbox AI (Education Apps by Cia)
+    -- [48/56] Produk: Blackbox AI (Education Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('33333333-3333-3333-3333-333333333333', 'Blackbox AI', 0, NULL, TRUE, 'Coding Assistant', 'sparkles', ARRAY['Semua Paket']::TEXT[], 'Asisten pemrograman AI nomor 1 untuk developer, auto-complete & debug kode.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1445,7 +1444,7 @@ BEGIN
     RETURNING id INTO v_type_id;
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, 'Chat Admin (Hubungi Admin)', 0, TRUE, 1);
 
-    -- [49/56] Produk: Microsoft 365 (Education Apps by Cia)
+    -- [49/56] Produk: Microsoft 365 (Education Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('33333333-3333-3333-3333-333333333333', 'Microsoft 365', 15000, NULL, TRUE, 'Word & Excel & 1TB', 'box', ARRAY['Famplan / Invite', 'Head']::TEXT[], 'Office resmi (Word, Excel, PowerPoint) + 1 TB cloud storage OneDrive.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1464,7 +1463,7 @@ BEGIN
     RETURNING id INTO v_type_id;
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 45000, TRUE, 1);
 
-    -- [50/56] Produk: GoodNotes iOS (Education Apps by Cia)
+    -- [50/56] Produk: GoodNotes iOS (Education Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('33333333-3333-3333-3333-333333333333', 'GoodNotes iOS', 30000, NULL, TRUE, 'Digital Notes', 'palette', ARRAY['Paket']::TEXT[], 'Catat kuliah, pdf markup, jurnal & rangkuman buku terpopuler di iPad.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1476,7 +1475,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, 'Lifetime (Garansi 6 Bulan)', 40000, TRUE, 2);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, 'Lifetime (Garansi 12 Bulan)', 45000, TRUE, 3);
 
-    -- [51/56] Produk: Duolingo Super (Education Apps by Cia)
+    -- [51/56] Produk: Duolingo Super (Education Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('33333333-3333-3333-3333-333333333333', 'Duolingo Super', 7000, NULL, TRUE, 'Language Learning', 'sparkles', ARRAY['Famplan / Invite', 'Individual Plan', 'Head']::TEXT[], 'Belajar 40+ bahasa tanpa batas nyawa, tanpa iklan dengan kuis latihan personal.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1504,7 +1503,7 @@ BEGIN
     RETURNING id INTO v_type_id;
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 45000, TRUE, 1);
 
-    -- [52/56] Produk: QuillBot Premium (Education Apps by Cia)
+    -- [52/56] Produk: QuillBot Premium (Education Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('33333333-3333-3333-3333-333333333333', 'QuillBot Premium', 5000, NULL, TRUE, 'Paraphrase Tool', 'sparkles', ARRAY['Sharing 5U', 'Sharing 8U', 'Private']::TEXT[], 'Parafrase kalimat akademik, cek plagiarisme & ringkas teks bahasa Inggris.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1528,7 +1527,7 @@ BEGIN
     RETURNING id INTO v_type_id;
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 60000, TRUE, 1);
 
-    -- [53/56] Produk: Grammarly Premium (Education Apps by Cia)
+    -- [53/56] Produk: Grammarly Premium (Education Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('33333333-3333-3333-3333-333333333333', 'Grammarly Premium', 6000, NULL, TRUE, 'Grammar & Style', 'sparkles', ARRAY['Sharing 5U', 'Sharing 8U', 'Education', 'Private']::TEXT[], 'Koreksi tata bahasa Inggris otomatis, saran tone suara dan deteksi AI.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1561,7 +1560,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '3 Bulan', 75000, TRUE, 3);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '6 Bulan', 100000, TRUE, 4);
 
-    -- [54/56] Produk: Scribd Everand (Education Apps by Cia)
+    -- [54/56] Produk: Scribd Everand (Education Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('33333333-3333-3333-3333-333333333333', 'Scribd Everand', 15000, NULL, TRUE, 'E-Books & Papers', 'box', ARRAY['Sharing', 'Private']::TEXT[], 'Perpustakaan digital jutaan e-book, audiobook, dokumen kuliah & jurnal.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1579,7 +1578,7 @@ BEGIN
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 35000, TRUE, 1);
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, 'Durasi > 1 Bulan (Tanyakan Admin)', 0, TRUE, 2);
 
-    -- [55/56] Produk: WPS Office Pro (Education Apps by Cia)
+    -- [55/56] Produk: WPS Office Pro (Education Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('33333333-3333-3333-3333-333333333333', 'WPS Office Pro', 20000, NULL, TRUE, 'Office Suite', 'box', ARRAY['Sharing', 'Private']::TEXT[], 'Alternatif Microsoft Office serba bisa, PDF editor & OCR konversi cepat.', TRUE)
     RETURNING id INTO v_prod_id;
@@ -1595,7 +1594,7 @@ BEGIN
     RETURNING id INTO v_type_id;
     INSERT INTO public.product_variant_options (variant_type_id, label, price, is_available, sort_order) VALUES (v_type_id, '1 Bulan', 40000, TRUE, 1);
 
-    -- [56/56] Produk: DeepL Pro (Education Apps by Cia)
+    -- [56/56] Produk: DeepL Pro (Education Apps)
     INSERT INTO public.products (type_id, name, price, base_price, has_variants, badge, icon_name, variants, description, is_active)
     VALUES ('33333333-3333-3333-3333-333333333333', 'DeepL Pro', 7000, NULL, TRUE, 'Accurate Translation', 'sparkles', ARRAY['Sharing', 'Sharing 3U', 'Private']::TEXT[], 'Penerjemah paling akurat dan luwes di dunia dengan penerjemahan dokumen utuh.', TRUE)
     RETURNING id INTO v_prod_id;

@@ -40,13 +40,13 @@ export function StoreProfileModule() {
   const [statFolls, setStatFolls] = useState('3.2k');
   const [statFolks, setStatFolks] = useState('4.1k');
   const [announcementText, setAnnouncementText] = useState(
-    'Katalog Baru! Beragam Aplikasi Premium siap diorder via WhatsApp Order bit.ly/wa-ciaa ✨'
+    'Katalog Baru! Beragam Aplikasi Premium siap diorder via WhatsApp Order ✨'
   );
   const [marqueeMessages, setMarqueeMessages] = useState<string[]>([
     'check product details before ordering 🛍️',
     'made with love & pixel magic by Contoh Nama Toko 💜',
     'QRIS All E-Wallet & All Bank Ready 💳',
-    'WhatsApp Order: bit.ly/wa-ciaa ✨',
+    'WhatsApp Order Ready 24/7 ✨',
   ]);
   const [newMarqueeText, setNewMarqueeText] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -328,7 +328,7 @@ export function StoreProfileModule() {
           <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm space-y-4">
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
               <Sparkles className="w-4 h-4 text-brand-600" />
-              <span>Identitas &amp; Kartu Profil Cia (ProfileCard)</span>
+              <span>Identitas &amp; Kartu Profil Toko (ProfileCard)</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -391,7 +391,7 @@ export function StoreProfileModule() {
                 className="mt-1 w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 leading-relaxed"
               />
               <p className="text-[11px] text-slate-400 mt-1">
-                Teks deskripsi lucu yang tampil di dalam kotak pastel kartu profil Cia.
+                Teks deskripsi yang tampil di dalam kartu profil Contoh Nama Toko.
               </p>
             </div>
 

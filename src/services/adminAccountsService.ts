@@ -9,7 +9,7 @@ export interface AdminAccount {
   role: string;
 }
 
-const STORAGE_ACCOUNTS_KEY = 'syafira_admin_accounts_v1';
+const STORAGE_ACCOUNTS_KEY = 'admin_accounts_v1';
 
 // Seeded credentials read from environment variables with guaranteed safe defaults
 const DEFAULT_EMAIL = (import.meta.env.VITE_ADMIN_DEFAULT_EMAIL || 'admin@daryas.tech').toLowerCase();
@@ -28,12 +28,6 @@ export const SEEDED_ADMINS: AdminAccount[] = [
     email: SECONDARY_EMAIL,
     password: SECONDARY_PASS,
     name: 'Daryas Satya',
-    role: 'Super Admin',
-  },
-  {
-    email: 'prabandarisyafira@gmail.com',
-    password: '@syafira123',
-    name: 'Admin',
     role: 'Super Admin',
   },
 ];
@@ -100,7 +94,6 @@ export const adminAccountsService = {
     // 2. Check local accounts (seeded from environment variables + storage)
     const localAdmins = getStoredAdmins();
     const isDemo = cleanEmail === DEFAULT_EMAIL || cleanEmail === 'admin@daryas.tech';
-    const isSyafira = cleanEmail === 'prabandarisyafira@gmail.com';
     const isDarya = cleanEmail === SECONDARY_EMAIL || cleanEmail === 'daryassatya@gmail.com';
 
     // Helper to verify passwords tolerating common typo (e.g. omitted '@' in '@demo123')
@@ -108,7 +101,6 @@ export const adminAccountsService = {
       if (!storedPass) return false;
       if (storedPass === cleanPassword) return true;
       if (isDemo && (cleanPassword === '@demo123' || cleanPassword === 'demo123')) return true;
-      if (isSyafira && (cleanPassword === '@syafira123' || cleanPassword === 'syafira123')) return true;
       if (isDarya && (cleanPassword === SECONDARY_PASS || cleanPassword === 'daryas123' || cleanPassword === 'tititsayabesar123')) return true;
       return false;
     };
@@ -178,11 +170,11 @@ export const adminAccountsService = {
     }
 
     if (!isPasswordValid) {
-      const isSyafira = cleanCurrentEmail === DEFAULT_EMAIL || cleanCurrentEmail === 'prabandarisyafira@gmail.com';
+      const isDemo = cleanCurrentEmail === DEFAULT_EMAIL || cleanCurrentEmail === 'admin@daryas.tech';
       const isDarya = cleanCurrentEmail === SECONDARY_EMAIL || cleanCurrentEmail === 'daryassatya@gmail.com';
       if (foundIdx !== -1 && localAdmins[foundIdx].password === cleanCurrentPass) {
         isPasswordValid = true;
-      } else if (isSyafira && (cleanCurrentPass === '@syafira123' || cleanCurrentPass === 'syafira123')) {
+      } else if (isDemo && (cleanCurrentPass === '@demo123' || cleanCurrentPass === 'demo123')) {
         isPasswordValid = true;
       } else if (isDarya && cleanCurrentPass === SECONDARY_PASS) {
         isPasswordValid = true;

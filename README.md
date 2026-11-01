@@ -70,7 +70,7 @@ Client Supabase (`src/lib/supabase.ts`) memeriksa ketersediaan variabel environm
    - Membuat tabel `product_types`, `products`, `customer_message_settings`, dan `social_media_links`.
    - Membuat trigger auto-update untuk timestamp `updated_at`.
    - Mengaktifkan Row Level Security (RLS) dengan kebijakan yang aman.
-   - Memasukkan data awal (initial seed data) produk dan tautan Syafira Store.
+   - Memasukkan data awal (initial seed data) produk dan tautan Contoh Nama Toko.
 
 ---
 

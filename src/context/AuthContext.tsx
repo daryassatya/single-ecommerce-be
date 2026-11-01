@@ -24,7 +24,7 @@ interface AuthContextType {
   }) => Promise<{ success: boolean; error?: string }>;
 }
 
-const AUTH_STORAGE_KEY = 'syafira_admin_session_v1';
+const AUTH_STORAGE_KEY = 'admin_session_v1';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

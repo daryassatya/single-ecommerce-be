@@ -18,8 +18,8 @@ import { triggerGlobalDisplayNotice } from '@/context/DisplayModeContext';
 export function AccountSettingsModule() {
   const { user } = useAuth();
 
-  const [fullName, setFullName] = useState(user?.name || 'Cia');
-  const [email, setEmail] = useState(user?.email || 'prabandarisyafira@gmail.com');
+  const [fullName, setFullName] = useState(user?.name || 'Admin');
+  const [email, setEmail] = useState(user?.email || 'admin@daryas.tech');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
