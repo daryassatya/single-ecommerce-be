@@ -29,10 +29,10 @@ export function StoreProfileModule() {
   const [saving, setSaving] = useState(false);
 
   // Form State
-  const [storeName, setStoreName] = useState('Cia Store ✦˚𝜗𝜚.ᐟ');
+  const [storeName, setStoreName] = useState('Contoh Nama Toko');
   const [handle, setHandle] = useState('@oepalin');
   const [badgeText, setBadgeText] = useState('DIGITAL GOODIES & SOCIAL HUB');
-  const [bio, setBio] = useState('');
+  const [bio, setBio] = useState('Tempat paling nyaman buat langganan aplikasi premium & digital goodies dengan garansi penuh dan proses kilat 5–30 menit.');
   const [whatsappNumber, setWhatsappNumber] = useState('6281400688284');
   const [isOpen, setIsOpen] = useState(true);
   const [productCount, setProductCount] = useState<number | null>(null);
@@ -40,14 +40,13 @@ export function StoreProfileModule() {
   const [statFolls, setStatFolls] = useState('3.2k');
   const [statFolks, setStatFolks] = useState('4.1k');
   const [announcementText, setAnnouncementText] = useState(
-    'Promo Cia Store: Diskon Rp 2.000 untuk pembelian bundel Netflix + Canva Pro hari ini!'
+    'Katalog Baru! Beragam Aplikasi Premium siap diorder via WhatsApp Order bit.ly/wa-ciaa ✨'
   );
   const [marqueeMessages, setMarqueeMessages] = useState<string[]>([
-    'check product details before ordering ✦',
-    'made with love & pixel magic by Cia Store ✦',
-    'thank you for shopping small & supporting Cia ✦',
-    'fast response 5–30 minutes process ✦',
-    'legal, safe & guaranteed warranty ✦',
+    'check product details before ordering 🛍️',
+    'made with love & pixel magic by Contoh Nama Toko 💜',
+    'QRIS All E-Wallet & All Bank Ready 💳',
+    'WhatsApp Order: bit.ly/wa-ciaa ✨',
   ]);
   const [newMarqueeText, setNewMarqueeText] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -397,7 +396,7 @@ export function StoreProfileModule() {
                     Status Toko: {isOpen ? 'Buka (Open)' : 'Tutup Sementara (Closed)'}
                   </p>
                   <p className="text-[11px] text-emerald-800/80">
-                    {isOpen ? 'Yay, Cia Store is open ♡' : 'Mohon maaf, toko sedang istirahat'}
+                    {isOpen ? 'Yay, Store is open ♡' : 'Mohon maaf, toko sedang istirahat'}
                   </p>
                 </div>
               </div>

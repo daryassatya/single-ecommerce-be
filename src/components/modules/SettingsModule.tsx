@@ -15,7 +15,7 @@ export function SettingsModule() {
             Pengaturan CMS Toko
           </h1>
           <p className="text-sm text-slate-500">
-            Kelola template pesan transaksi WhatsApp dan tautan media sosial toko Cia Store.
+            Kelola template pesan transaksi WhatsApp dan tautan media sosial Contoh Nama Toko.
           </p>
         </div>
       </div>

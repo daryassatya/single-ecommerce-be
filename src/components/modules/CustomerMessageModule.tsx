@@ -336,7 +336,7 @@ export function CustomerMessageModule() {
               </div>
 
               <div className="mt-3 text-[11px] text-slate-400 text-center">
-                Preview ini memperlihatkan teks yang akan otomatis terisi saat pembeli menekan tombol &ldquo;Saya sudah bayar &rarr; WhatsApp&rdquo; di website Cia Store.
+                Preview ini memperlihatkan teks yang akan otomatis terisi saat pembeli menekan tombol &ldquo;Saya sudah bayar &rarr; WhatsApp&rdquo; di website Contoh Nama Toko.
               </div>
             </div>
           </div>

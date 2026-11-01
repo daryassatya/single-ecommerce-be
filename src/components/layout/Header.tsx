@@ -27,7 +27,7 @@ export function Header({ onToggleSidebar, activeTabTitle, onNavigateToAccount }:
 
         <div className="min-w-0">
           <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">
-            <span>Cia Store</span>
+            <span>Contoh Nama Toko</span>
             <span>/</span>
             <span className="text-brand-600">Admin</span>
           </div>

@@ -84,10 +84,10 @@ export function Sidebar({ currentTab, onTabChange, isOpen, onClose }: SidebarPro
             </div>
             <div className="min-w-0">
               <div className="font-extrabold text-base tracking-tight text-slate-900 truncate">
-                Cia Store
+                Contoh Nama Toko
               </div>
               <div className="text-[10px] font-semibold text-brand-600 uppercase tracking-wider truncate">
-                Admin Dashboard & CMS
+                Display Dashboard & CMS
               </div>
             </div>
           </div>

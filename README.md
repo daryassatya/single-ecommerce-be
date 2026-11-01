@@ -1,6 +1,9 @@
-# Cia Store - Admin Dashboard & CMS
+# Single Page E-Commerce — Admin Dashboard & CMS (Display Demo) ✦˚𝜗𝜚.ᐟ
 
-Aplikasi Admin Dashboard & Content Management System (CMS) modern untuk Cia Store. Dibangun dengan **Vite + React (TypeScript)**, dipadukan dengan **Radix UI Primitives**, **Tailwind CSS**, dan **Lucide Icons**, serta terintegrasi penuh ke database PostgreSQL **Supabase** dan siap dideploy ke **Vercel (Vercel-Ready)**.
+> **Display / Demo Admin Dashboard & CMS Single Page E-Commerce**  
+> Dibuat oleh [daryas.tech](https://daryas.tech/)
+
+Aplikasi Admin Dashboard & Content Management System (CMS) modern untuk display produk **Single Page E-Commerce** (menggunakan identitas demo **Contoh Nama Toko**). Dibangun dengan **Vite + React (TypeScript)**, dipadukan dengan **Radix UI Primitives**, **Tailwind CSS**, dan **Lucide Icons**, serta terintegrasi penuh ke database PostgreSQL **Supabase** dan siap dideploy ke **Vercel (Vercel-Ready SPA)**.
 
 ---
 
@@ -75,7 +78,7 @@ Client Supabase (`src/lib/supabase.ts`) memeriksa ketersediaan variabel environm
 
 ```bash
 # Masuk ke folder proyek
-cd syafira-store-be
+cd single-ecommerce-be
 
 # Pastikan dependencies terinstall
 npm install
@@ -108,7 +111,7 @@ Proyek ini telah dilengkapi file `vercel.json` dengan konfigurasi routing SPA:
 
 1. Push repository ke GitHub/GitLab.
 2. Di Vercel Dashboard, klik **Add New Project** dan import repository ini.
-3. Pada bagian **Root Directory**, pilih atau atur ke folder `syafira-store-be`.
+3. Pada bagian **Root Directory**, biarkan `./` (atau pilih folder `single-ecommerce-be` jika di monorepo).
 4. **Framework Preset**: Vite (otomatis terdeteksi).
    - Build Command: `npm run build`
    - Output Directory: `dist`

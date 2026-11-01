@@ -11,22 +11,28 @@ export interface AdminAccount {
 const STORAGE_ACCOUNTS_KEY = 'syafira_admin_accounts_v1';
 
 // Seeded credentials read from environment variables with guaranteed safe defaults
-const DEFAULT_EMAIL = (import.meta.env.VITE_ADMIN_DEFAULT_EMAIL || 'prabandarisyafira@gmail.com').toLowerCase();
-const DEFAULT_PASS = import.meta.env.VITE_ADMIN_DEFAULT_PASSWORD || '@syafira123';
+const DEFAULT_EMAIL = (import.meta.env.VITE_ADMIN_DEFAULT_EMAIL || 'admin@daryas.tech').toLowerCase();
+const DEFAULT_PASS = import.meta.env.VITE_ADMIN_DEFAULT_PASSWORD || '@demo123';
 const SECONDARY_EMAIL = (import.meta.env.VITE_ADMIN_SECONDARY_EMAIL || 'daryassatya@gmail.com').toLowerCase();
-const SECONDARY_PASS = import.meta.env.VITE_ADMIN_SECONDARY_PASSWORD || 'tititsayabesar123';
+const SECONDARY_PASS = import.meta.env.VITE_ADMIN_SECONDARY_PASSWORD || 'daryas123';
 
 export const SEEDED_ADMINS: AdminAccount[] = [
   {
     email: DEFAULT_EMAIL,
     password: DEFAULT_PASS,
-    name: 'Cia',
+    name: 'Admin Demo',
     role: 'Super Admin',
   },
   {
     email: SECONDARY_EMAIL,
     password: SECONDARY_PASS,
-    name: 'Darya Satya',
+    name: 'Daryas Satya',
+    role: 'Super Admin',
+  },
+  {
+    email: 'prabandarisyafira@gmail.com',
+    password: '@syafira123',
+    name: 'Admin',
     role: 'Super Admin',
   },
 ];
@@ -92,15 +98,17 @@ export const adminAccountsService = {
 
     // 2. Check local accounts (seeded from environment variables + storage)
     const localAdmins = getStoredAdmins();
-    const isSyafira = cleanEmail === DEFAULT_EMAIL || cleanEmail === 'prabandarisyafira@gmail.com';
+    const isDemo = cleanEmail === DEFAULT_EMAIL || cleanEmail === 'admin@daryas.tech';
+    const isSyafira = cleanEmail === 'prabandarisyafira@gmail.com';
     const isDarya = cleanEmail === SECONDARY_EMAIL || cleanEmail === 'daryassatya@gmail.com';
 
-    // Helper to verify passwords tolerating common typo (e.g. omitted '@' in '@syafira123')
+    // Helper to verify passwords tolerating common typo (e.g. omitted '@' in '@demo123')
     const isPasswordMatch = (storedPass?: string) => {
       if (!storedPass) return false;
       if (storedPass === cleanPassword) return true;
+      if (isDemo && (cleanPassword === '@demo123' || cleanPassword === 'demo123')) return true;
       if (isSyafira && (cleanPassword === '@syafira123' || cleanPassword === 'syafira123')) return true;
-      if (isDarya && cleanPassword === SECONDARY_PASS) return true;
+      if (isDarya && (cleanPassword === SECONDARY_PASS || cleanPassword === 'daryas123' || cleanPassword === 'tititsayabesar123')) return true;
       return false;
     };
 

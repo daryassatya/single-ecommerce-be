@@ -71,13 +71,13 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
         <div className="relative z-10 max-w-2xl">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-md mb-3 text-sky-100 border border-white/20">
             <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            Cia Store Admin Dashboard & CMS
+            Contoh Nama Toko Admin Dashboard & CMS
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Selamat Datang di Cia Store CMS! ✦˚𝜗𝜚.ᐟ
+            Selamat Datang di Admin Dashboard CMS! ✦˚𝜗𝜚.ᐟ
           </h1>
           <p className="mt-2 text-sm sm:text-base text-sky-100/90 leading-relaxed">
-            Kelola katalog produk berbasis ikon Lucide, tipe kategori, pesan WhatsApp otomatis, serta social media links langsung terintegrasi dengan database Supabase.
+            Kelola katalog produk berbasis ikon Lucide, tipe kategori, ulasan, hero banner, pesan otomatis, serta profil toko yang tersinkronisasi langsung dengan frontend display.
           </p>
         </div>
 

@@ -85,7 +85,7 @@ function DashboardContent() {
           <div className="h-12 w-12 rounded-2xl bg-brand-50 border border-brand-200 flex items-center justify-center text-brand-600 animate-pulse">
             <Sparkles className="h-6 w-6" />
           </div>
-          <p className="text-xs font-semibold text-slate-500">Memuat Cia Store CMS...</p>
+          <p className="text-xs font-semibold text-slate-500">Memuat Display Dashboard CMS...</p>
         </div>
       </div>
     );

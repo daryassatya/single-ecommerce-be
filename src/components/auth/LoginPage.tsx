@@ -28,7 +28,7 @@ export function LoginPage() {
       if (res.success) {
         toast({
           title: 'Selamat Datang!',
-          description: 'Login berhasil. Mengakses dashboard admin Cia Store...',
+          description: 'Login berhasil. Mengakses dashboard admin Contoh Nama Toko...',
           variant: 'success',
         });
       } else {
@@ -46,6 +46,12 @@ export function LoginPage() {
     }
   };
 
+  const handleFillDemo = () => {
+    setEmail('admin@daryas.tech');
+    setPassword('@demo123');
+    setErrorMessage('');
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden selection:bg-brand-500 selection:text-white">
       {/* Decorative gradient blur background */}
@@ -60,10 +66,10 @@ export function LoginPage() {
             <Sparkles className="h-8 w-8" />
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-            Cia Store
+            Contoh Nama Toko
           </h2>
           <p className="mt-1.5 text-xs sm:text-sm font-medium text-slate-500">
-            Admin Dashboard &amp; Content Management System
+            Admin Dashboard &amp; CMS &bull; <span className="text-brand-600 font-semibold">Display Showcase</span>
           </p>
         </div>
 
@@ -94,7 +100,7 @@ export function LoginPage() {
                   type="email"
                   autoComplete="email"
                   required
-                  placeholder="admin@ciastore.com"
+                  placeholder="admin@daryas.tech"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="block w-full pl-10 pr-3.5 py-3 border border-slate-200 rounded-xl text-sm placeholder:text-slate-400 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all bg-slate-50/50 focus:bg-white"
@@ -154,12 +160,29 @@ export function LoginPage() {
                 )}
               </button>
             </div>
+
+            {/* Quick Demo Credentials Box for Display Dashboard */}
+            <div className="pt-2 border-t border-slate-100">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70 text-center">
+                <p className="text-[11px] font-semibold text-slate-600 mb-1.5">
+                  🧪 Mode Display &amp; Portofolio Demo
+                </p>
+                <button
+                  type="button"
+                  onClick={handleFillDemo}
+                  className="w-full py-2 px-3 rounded-lg bg-white border border-brand-200 hover:border-brand-300 hover:bg-brand-50/50 text-brand-700 font-semibold text-xs transition shadow-2xs flex items-center justify-center gap-1.5"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-brand-500" />
+                  <span>Isi Otomatis Kredensial Demo</span>
+                </button>
+              </div>
+            </div>
           </form>
         </div>
 
         {/* Footer */}
         <p className="mt-8 text-center text-xs text-slate-400">
-          &copy; 2026 Cia Store &bull; Sistem dibuat oleh{" "}
+          &copy; 2026 Contoh Nama Toko &bull; Sistem dibuat oleh{" "}
           <a
             href="https://daryas.tech/"
             target="_blank"
