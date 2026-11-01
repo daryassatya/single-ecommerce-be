@@ -8,16 +8,18 @@ import { termsService } from '@/services/termsService';
 import { Product, ProductType, SocialMediaLink, Testimonial, HeroSlide, TermsAndCondition } from '@/types/database';
 import { DynamicIcon } from '@/lib/icons';
 import { formatRupiah } from '@/lib/utils';
+import { Button } from '@/components/ui/Button';
 import {
   Package,
   Layers,
   Share2,
   ArrowUpRight,
   Sparkles,
-  Database,
   Heart,
   FileText,
   Terminal,
+  LayoutDashboard,
+  RefreshCw,
 } from 'lucide-react';
 import { NavTab } from '../layout/Sidebar';
 
@@ -34,29 +36,30 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
   const [terms, setTerms] = useState<TermsAndCondition[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadStats() {
-      try {
-        setLoading(true);
-        const [prodsData, typesData, socialsData, testiData, slidesData, termsData] =
-          await Promise.all([
-            productsService.getAll().catch(() => []),
-            productTypesService.getAll().catch(() => []),
-            socialLinksService.getAll().catch(() => []),
-            testimonialsService.getAll().catch(() => []),
-            heroSlidesService.getAll().catch(() => []),
-            termsService.getAll().catch(() => []),
-          ]);
-        setProducts(prodsData);
-        setTypes(typesData);
-        setSocials(socialsData);
-        setTestimonials(testiData);
-        setSlides(slidesData);
-        setTerms(termsData);
-      } finally {
-        setLoading(false);
-      }
+  const loadStats = async () => {
+    try {
+      setLoading(true);
+      const [prodsData, typesData, socialsData, testiData, slidesData, termsData] =
+        await Promise.all([
+          productsService.getAll().catch(() => []),
+          productTypesService.getAll().catch(() => []),
+          socialLinksService.getAll().catch(() => []),
+          testimonialsService.getAll().catch(() => []),
+          heroSlidesService.getAll().catch(() => []),
+          termsService.getAll().catch(() => []),
+        ]);
+      setProducts(prodsData);
+      setTypes(typesData);
+      setSocials(socialsData);
+      setTestimonials(testiData);
+      setSlides(slidesData);
+      setTerms(termsData);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     loadStats();
   }, []);
 
@@ -65,47 +68,31 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
   const activeSocials = socials.filter((s) => s.is_active);
 
   return (
-    <div className="space-y-8">
-      {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-sky-600 via-brand-600 to-indigo-700 p-6 sm:p-8 text-white shadow-xl">
-        <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-md mb-3 text-sky-100 border border-white/20">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            Contoh Nama Toko Admin Dashboard & CMS
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Selamat Datang di Admin Dashboard CMS! ✦˚𝜗𝜚.ᐟ
+    <div className="space-y-6">
+      {/* Header section */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
+            <LayoutDashboard className="w-6 h-6 text-brand-600" />
+            <span>Ringkasan &amp; Metrik Toko</span>
           </h1>
-          <p className="mt-2 text-sm sm:text-base text-sky-100/90 leading-relaxed">
-            Kelola katalog produk berbasis ikon Lucide, tipe kategori, ulasan, hero banner, pesan otomatis, serta profil toko yang tersinkronisasi langsung dengan frontend display.
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Ringkasan statistik katalog produk, kategori, ulasan pembeli, dan status display etalase toko.
           </p>
         </div>
 
-        {/* Decorative backdrop shapes */}
-        <div className="absolute -right-8 -bottom-12 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-        <div className="absolute right-32 -top-12 w-48 h-48 rounded-full bg-sky-300/20 blur-xl pointer-events-none" />
-      </div>
-
-      {/* Database Schema Guide Banner */}
-      <div className="rounded-2xl border border-sky-100 bg-sky-50/70 p-5 text-slate-800">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-start gap-3">
-            <div className="rounded-xl bg-sky-500/10 p-2.5 text-sky-700 shrink-0">
-              <Database className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">
-                Setup Skema Database Supabase
-              </h3>
-              <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
-                Script SQL lengkap untuk membuat tabel, RLS policies, dan initial seed data tersedia di file{' '}
-                <code className="rounded bg-sky-100/80 px-1.5 py-0.5 font-mono text-sky-900 font-semibold">
-                  supabase/schema.sql
-                </code>
-                . Cukup copy & paste ke <strong>Supabase SQL Editor</strong> untuk inisialisasi instan.
-              </p>
-            </div>
-          </div>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={loadStats}
+            disabled={loading}
+            title="Refresh Data"
+            className="gap-1.5"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">Refresh</span>
+          </Button>
         </div>
       </div>
 
