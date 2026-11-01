@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { CustomerMessageSetting } from '@/types/database';
+import { enforceReadOnly } from '@/lib/displayMode';
 
 export const messageSettingsService = {
   async get(settingKey: string = 'default_order_message'): Promise<CustomerMessageSetting | null> {
@@ -20,6 +21,7 @@ export const messageSettingsService = {
     settingKey: string,
     payload: { title?: string; description?: string; message_template: string }
   ): Promise<CustomerMessageSetting> {
+    enforceReadOnly('Menyimpan template pesan WhatsApp');
     // Check if exists first
     const existing = await this.get(settingKey);
 

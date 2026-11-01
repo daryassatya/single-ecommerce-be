@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/Button';
 import { Switch } from '@/components/ui/Switch';
 import { IconPicker } from '@/components/ui/IconPicker';
 import { Product, ProductInput, ProductType, ProductVariantTypeInput } from '@/types/database';
-import { Plus, Trash2, Layers, CheckCircle2 } from 'lucide-react';
+import { Plus, Trash2, Layers, CheckCircle2, Sparkles } from 'lucide-react';
 
 interface ProductFormDialogProps {
   open: boolean;
@@ -258,6 +258,12 @@ export function ProductFormDialog({
           </DialogHeader>
 
           <div className="space-y-4 p-6 py-4 overflow-y-auto flex-1 pr-3">
+            {/* Display Mode Notice Banner inside dialog */}
+            <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-3 text-xs text-amber-900 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+              <span><strong>Mode Display:</strong> Formulir ini hanya untuk melihat struktur varian &amp; opsi produk. Aksi simpan dinonaktifkan.</span>
+            </div>
+
             {/* Nama Produk */}
             <div>
               <label className="text-xs font-semibold text-slate-700">

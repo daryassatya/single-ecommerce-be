@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { useToast } from '@/components/ui/Toast';
 import { Button } from '@/components/ui/Button';
 import {
   ShieldCheck,
@@ -16,10 +15,10 @@ import {
   Users,
 } from 'lucide-react';
 import { SEEDED_ADMINS } from '@/services/adminAccountsService';
+import { triggerGlobalDisplayNotice } from '@/context/DisplayModeContext';
 
 export function AccountSettingsModule() {
-  const { user, updateCredentials } = useAuth();
-  const { toast } = useToast();
+  const { user } = useAuth();
 
   const [fullName, setFullName] = useState(user?.name || 'Cia');
   const [email, setEmail] = useState(user?.email || 'prabandarisyafira@gmail.com');
@@ -31,76 +30,9 @@ export function AccountSettingsModule() {
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
 
-  const [saving, setSaving] = useState(false);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!currentPassword.trim()) {
-      toast({
-        title: 'Password Saat Ini Wajib Diisi',
-        description: 'Masukkan password lama/saat ini untuk memvalidasi perubahan akun.',
-        variant: 'error',
-      });
-      return;
-    }
-
-    if (newPassword.trim()) {
-      if (newPassword.trim().length < 6) {
-        toast({
-          title: 'Password Terlalu Pendek',
-          description: 'Password baru minimal harus terdiri dari 6 karakter.',
-          variant: 'error',
-        });
-        return;
-      }
-
-      if (newPassword.trim() !== confirmPassword.trim()) {
-        toast({
-          title: 'Konfirmasi Password Tidak Cocok',
-          description: 'Password baru dan konfirmasi password harus sama persis.',
-          variant: 'error',
-        });
-        return;
-      }
-    }
-
-    try {
-      setSaving(true);
-      const res = await updateCredentials({
-        currentEmail: user?.email || email,
-        currentPassword: currentPassword.trim(),
-        newEmail: email.trim().toLowerCase(),
-        newPassword: newPassword.trim() ? newPassword.trim() : undefined,
-        newName: fullName.trim(),
-      });
-
-      if (res.success) {
-        toast({
-          title: 'Kredensial Akun Berhasil Diperbarui',
-          description: 'Email, profil, dan/atau password admin berhasil disimpan.',
-          variant: 'success',
-        });
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-      } else {
-        toast({
-          title: 'Gagal Memperbarui Akun',
-          description: res.error || 'Terjadi kesalahan saat memproses data.',
-          variant: 'error',
-        });
-      }
-    } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : 'Gagal memperbarui akun';
-      toast({
-        title: 'Terjadi Kesalahan',
-        description: errorMsg,
-        variant: 'error',
-      });
-    } finally {
-      setSaving(false);
-    }
+    triggerGlobalDisplayNotice('Ubah Profil & Kata Sandi Admin');
   };
 
   return (
@@ -202,6 +134,16 @@ export function AccountSettingsModule() {
             onSubmit={handleSubmit}
             className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-sm space-y-6"
           >
+            <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-4 text-xs text-amber-950 flex items-center gap-3">
+              <span className="font-bold text-amber-600 text-sm">✦</span>
+              <div>
+                <p className="font-bold">Mode Display Showcase (Read-Only)</p>
+                <p className="text-amber-800/90 mt-0.5">
+                  Pengubahan profil dan password admin dinonaktifkan pada mode display untuk menjaga keamanan akses demo.
+                </p>
+              </div>
+            </div>
+
             <div>
               <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                 <KeyRound className="w-4 h-4 text-brand-600" />
@@ -341,9 +283,9 @@ export function AccountSettingsModule() {
 
             {/* Submit button */}
             <div className="flex items-center justify-end gap-3 pt-2">
-              <Button type="submit" disabled={saving} className="gap-2 px-6">
+              <Button type="submit" className="gap-2 px-6">
                 <Save className="w-4 h-4" />
-                <span>{saving ? 'Menyimpan...' : 'Simpan Perubahan Akun'}</span>
+                <span>Simpan Perubahan Akun</span>
               </Button>
             </div>
           </form>

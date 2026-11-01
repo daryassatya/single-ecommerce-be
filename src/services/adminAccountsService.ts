@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { enforceReadOnly } from '@/lib/displayMode';
 
 export interface AdminAccount {
   id?: string;
@@ -146,6 +147,7 @@ export const adminAccountsService = {
     newPassword?: string;
     newName?: string;
   }): Promise<{ success: boolean; updatedUser?: AdminAccount; error?: string }> {
+    enforceReadOnly('Mengubah akun admin');
     const { currentEmail, currentPassword, newEmail, newPassword, newName } = params;
 
     const cleanCurrentEmail = currentEmail.trim().toLowerCase();

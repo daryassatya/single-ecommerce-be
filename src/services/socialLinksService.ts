@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { SocialMediaLink, SocialMediaLinkInput } from '@/types/database';
+import { enforceReadOnly } from '@/lib/displayMode';
 
 export const socialLinksService = {
   async getAll(): Promise<SocialMediaLink[]> {
@@ -16,6 +17,7 @@ export const socialLinksService = {
   },
 
   async create(input: SocialMediaLinkInput): Promise<SocialMediaLink> {
+    enforceReadOnly('Menambah tautan sosial media');
     const { data, error } = await supabase
       .from('social_media_links')
       .insert([input])
@@ -30,6 +32,7 @@ export const socialLinksService = {
   },
 
   async update(id: string, input: Partial<SocialMediaLinkInput>): Promise<SocialMediaLink> {
+    enforceReadOnly('Mengubah tautan sosial media');
     const { data, error } = await supabase
       .from('social_media_links')
       .update(input)
@@ -49,6 +52,7 @@ export const socialLinksService = {
   },
 
   async delete(id: string): Promise<void> {
+    enforceReadOnly('Menghapus tautan sosial media');
     const { error } = await supabase
       .from('social_media_links')
       .delete()
@@ -61,6 +65,7 @@ export const socialLinksService = {
   },
 
   async updateOrder(links: { id: string; sort_order: number }[]): Promise<void> {
+    enforceReadOnly('Mengubah urutan sosial media');
     for (const link of links) {
       await supabase
         .from('social_media_links')

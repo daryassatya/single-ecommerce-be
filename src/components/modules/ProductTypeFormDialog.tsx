@@ -92,6 +92,10 @@ export function ProductTypeFormDialog({
           </DialogHeader>
 
           <div className="space-y-4 py-2">
+            <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-3 text-xs text-amber-900 flex items-center gap-2">
+              <span className="font-bold text-amber-600">✦</span>
+              <span><strong>Mode Display:</strong> Tambah/Ubah kategori dinonaktifkan pada mode display.</span>
+            </div>
             <div>
               <label className="text-xs font-semibold text-slate-700">
                 Nama Tipe / Kategori <span className="text-rose-500">*</span>

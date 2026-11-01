@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { Testimonial, TestimonialInput } from '@/types/database';
+import { enforceReadOnly } from '@/lib/displayMode';
 
 export const testimonialsService = {
   async getAll(): Promise<Testimonial[]> {
@@ -16,6 +17,7 @@ export const testimonialsService = {
   },
 
   async create(input: TestimonialInput): Promise<Testimonial> {
+    enforceReadOnly('Menambah ulasan pembeli');
     const { data, error } = await supabase
       .from('testimonials')
       .insert([{
@@ -35,6 +37,7 @@ export const testimonialsService = {
   },
 
   async update(id: string, input: Partial<TestimonialInput>): Promise<Testimonial> {
+    enforceReadOnly('Mengubah status ulasan pembeli');
     const { data, error } = await supabase
       .from('testimonials')
       .update(input)
@@ -54,6 +57,7 @@ export const testimonialsService = {
   },
 
   async delete(id: string): Promise<void> {
+    enforceReadOnly('Menghapus ulasan pembeli');
     const { error } = await supabase
       .from('testimonials')
       .delete()

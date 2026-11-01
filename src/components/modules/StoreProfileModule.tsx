@@ -213,6 +213,17 @@ export function StoreProfileModule() {
         </div>
       </div>
 
+      {/* Display Mode Notice Banner */}
+      <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-4 text-xs text-amber-950 flex items-center gap-3">
+        <Sparkles className="w-5 h-5 text-amber-600 shrink-0" />
+        <div>
+          <p className="font-bold">Mode Display Showcase (Read-Only)</p>
+          <p className="text-amber-800/90 mt-0.5">
+            Pengaturan profil toko ini merupakan representasi tampilan display. Fitur penyimpanan dan pengunggahan avatar dinonaktifkan.
+          </p>
+        </div>
+      </div>
+
       <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Store Profile & Contact */}
         <div className="lg:col-span-7 space-y-6">

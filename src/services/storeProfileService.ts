@@ -1,8 +1,10 @@
 import { supabase } from '@/lib/supabase';
 import { StoreProfile, StoreProfileInput } from '@/types/database';
+import { enforceReadOnly } from '@/lib/displayMode';
 
 export const storeProfileService = {
   async uploadAvatar(file: File): Promise<string> {
+    enforceReadOnly('Mengunggah avatar toko');
     // 1. Validasi tipe file
     if (!file.type.startsWith('image/')) {
       throw new Error('Hanya file gambar (JPG, PNG, WEBP, GIF) yang diperbolehkan.');
@@ -64,6 +66,7 @@ export const storeProfileService = {
   },
 
   async update(input: Partial<StoreProfileInput>): Promise<StoreProfile> {
+    enforceReadOnly('Mengubah profil toko');
     const current = await this.get();
 
     if (current) {

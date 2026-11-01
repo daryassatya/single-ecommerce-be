@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { TermsAndCondition, TermsAndConditionInput } from '@/types/database';
+import { enforceReadOnly } from '@/lib/displayMode';
 
 export const termsService = {
   async getAll(): Promise<TermsAndCondition[]> {
@@ -17,6 +18,7 @@ export const termsService = {
   },
 
   async create(input: TermsAndConditionInput): Promise<TermsAndCondition> {
+    enforceReadOnly('Menambah syarat & ketentuan');
     const { data, error } = await supabase
       .from('terms_and_conditions')
       .insert([{
@@ -36,6 +38,7 @@ export const termsService = {
   },
 
   async update(id: string, input: Partial<TermsAndConditionInput>): Promise<TermsAndCondition> {
+    enforceReadOnly('Mengubah syarat & ketentuan');
     const { data, error } = await supabase
       .from('terms_and_conditions')
       .update(input)
@@ -51,6 +54,7 @@ export const termsService = {
   },
 
   async delete(id: string): Promise<void> {
+    enforceReadOnly('Menghapus syarat & ketentuan');
     const { error } = await supabase
       .from('terms_and_conditions')
       .delete()

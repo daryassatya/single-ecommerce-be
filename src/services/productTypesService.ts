@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { ProductType, ProductTypeInput } from '@/types/database';
+import { enforceReadOnly } from '@/lib/displayMode';
 
 export const productTypesService = {
   async getAll(): Promise<ProductType[]> {
@@ -30,6 +31,7 @@ export const productTypesService = {
   },
 
   async create(input: ProductTypeInput): Promise<ProductType> {
+    enforceReadOnly('Menambah kategori produk');
     const { data, error } = await supabase
       .from('product_types')
       .insert([input])
@@ -44,6 +46,7 @@ export const productTypesService = {
   },
 
   async update(id: string, input: Partial<ProductTypeInput>): Promise<ProductType> {
+    enforceReadOnly('Mengubah kategori produk');
     const { data, error } = await supabase
       .from('product_types')
       .update(input)
@@ -63,6 +66,7 @@ export const productTypesService = {
   },
 
   async delete(id: string): Promise<void> {
+    enforceReadOnly('Menghapus kategori produk');
     const { error } = await supabase
       .from('product_types')
       .delete()

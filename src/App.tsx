@@ -1,6 +1,7 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { ToastProvider } from '@/components/ui/Toast';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { DisplayModeProvider } from '@/context/DisplayModeContext';
 import { LoginPage } from '@/components/auth/LoginPage';
 import { Sidebar, NavTab } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
@@ -107,6 +108,14 @@ function DashboardContent() {
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col min-w-0 transition-all duration-300 w-full overflow-x-hidden">
+        {/* Top Display Notice Banner */}
+        <div className="bg-gradient-to-r from-amber-500/10 via-amber-500/15 to-amber-500/10 border-b border-amber-500/20 px-4 py-2 text-center text-xs font-medium text-amber-950 flex items-center justify-center gap-2 shrink-0">
+          <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse shrink-0" />
+          <span>
+            <strong>Mode Display Showcase:</strong> Dashboard ini bersifat <em>Read-Only</em> untuk demonstrasi etalase toko. Aksi Create, Update, dan Delete dinonaktifkan.
+          </span>
+        </div>
+
         <Header
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
           activeTabTitle={tabTitles[currentTab]}
@@ -136,9 +145,11 @@ function DashboardContent() {
 export function App() {
   return (
     <ToastProvider>
-      <AuthProvider>
-        <DashboardContent />
-      </AuthProvider>
+      <DisplayModeProvider>
+        <AuthProvider>
+          <DashboardContent />
+        </AuthProvider>
+      </DisplayModeProvider>
     </ToastProvider>
   );
 }

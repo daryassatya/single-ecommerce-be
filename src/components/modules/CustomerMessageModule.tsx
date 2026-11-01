@@ -189,7 +189,18 @@ export function CustomerMessageModule() {
           <span className="ml-2 text-sm text-slate-500">Memuat data pengaturan...</span>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="space-y-6">
+          <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-4 text-xs text-amber-950 flex items-center gap-3">
+            <span className="font-bold text-amber-600 text-sm">✦</span>
+            <div>
+              <p className="font-bold">Mode Display Showcase (Read-Only)</p>
+              <p className="text-amber-800/90 mt-0.5">
+                Anda dapat melihat live preview balon WhatsApp secara real-time. Aksi simpan perubahan template dinonaktifkan pada dashboard demo ini.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Form Editor (7 cols) */}
           <div className="lg:col-span-7 bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
             <form onSubmit={handleSave} className="space-y-5">
@@ -341,7 +352,8 @@ export function CustomerMessageModule() {
             </div>
           </div>
         </div>
-      )}
-    </div>
-  );
+      </div>
+    )}
+  </div>
+);
 }

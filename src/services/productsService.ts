@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { Product, ProductInput, ProductVariantType } from '@/types/database';
+import { enforceReadOnly } from '@/lib/displayMode';
 
 function normalizeProduct(p: any): Product {
   const rawVariantTypes = p.product_variant_types || p.variant_types || [];
@@ -146,6 +147,7 @@ export const productsService = {
   },
 
   async create(input: ProductInput): Promise<Product> {
+    enforceReadOnly('Menambah produk');
     const { variant_types, ...coreInput } = input;
 
     // Determine base_price and price
@@ -249,6 +251,7 @@ export const productsService = {
   },
 
   async update(id: string, input: Partial<ProductInput>): Promise<Product> {
+    enforceReadOnly('Mengubah produk');
     const { variant_types, ...coreInput } = input;
 
     const hasVariants = coreInput.has_variants !== undefined 
@@ -349,6 +352,7 @@ export const productsService = {
   },
 
   async delete(id: string): Promise<void> {
+    enforceReadOnly('Menghapus produk');
     const { error } = await supabase
       .from('products')
       .delete()

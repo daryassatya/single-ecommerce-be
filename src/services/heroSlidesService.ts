@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { HeroSlide, HeroSlideInput } from '@/types/database';
+import { enforceReadOnly } from '@/lib/displayMode';
 
 export const heroSlidesService = {
   async getAll(): Promise<HeroSlide[]> {
@@ -17,6 +18,7 @@ export const heroSlidesService = {
   },
 
   async uploadImage(file: File): Promise<string> {
+    enforceReadOnly('Mengunggah gambar slide');
     // 1. Pengecekan tipe file: Hanya boleh bertipe gambar
     if (!file.type.startsWith('image/')) {
       throw new Error('Hanya file gambar (JPG, PNG, WEBP, GIF) yang diperbolehkan.');
@@ -65,6 +67,7 @@ export const heroSlidesService = {
   },
 
   async create(input: HeroSlideInput): Promise<HeroSlide> {
+    enforceReadOnly('Menambah slide hero');
     const { data, error } = await supabase
       .from('hero_slides')
       .insert([{
@@ -86,6 +89,7 @@ export const heroSlidesService = {
   },
 
   async update(id: string, input: Partial<HeroSlideInput>): Promise<HeroSlide> {
+    enforceReadOnly('Mengubah slide hero');
     const { data, error } = await supabase
       .from('hero_slides')
       .update(input)
@@ -101,6 +105,7 @@ export const heroSlidesService = {
   },
 
   async delete(id: string): Promise<void> {
+    enforceReadOnly('Menghapus slide hero');
     const { error } = await supabase
       .from('hero_slides')
       .delete()
