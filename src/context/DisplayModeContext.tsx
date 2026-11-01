@@ -75,7 +75,7 @@ export function DisplayModeProvider({ children }: { children: React.ReactNode })
             </div>
 
             {/* Title */}
-            <AlertDialogTitle className="text-xl font-extrabold text-slate-900 tracking-tight">
+            <AlertDialogTitle className="text-xl font-extrabold text-slate-900 tracking-tight font-fancy">
               Aksi Dibatasi (Read-Only)
             </AlertDialogTitle>
 

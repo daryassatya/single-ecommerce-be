@@ -71,7 +71,7 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
       {/* Header section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5 font-fancy">
             <LayoutDashboard className="w-6 h-6 text-brand-600" />
             <span>Ringkasan &amp; Metrik Toko</span>
           </h1>
@@ -244,7 +244,7 @@ export function OverviewModule({ onNavigate }: OverviewModuleProps) {
       <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-200/80">
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Katalog Produk Terkini</h2>
+            <h2 className="text-lg font-bold text-slate-900 font-fancy">Katalog Produk Terkini</h2>
             <p className="text-xs text-slate-500">
               Daftar produk yang aktif di etalase toko menggunakan ikon Lucide.
             </p>

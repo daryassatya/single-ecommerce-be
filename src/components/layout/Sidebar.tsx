@@ -82,7 +82,7 @@ export function Sidebar({ currentTab, onTabChange, isOpen, onClose }: SidebarPro
               <Sparkles className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <div className="font-extrabold text-base tracking-tight text-slate-900 truncate">
+              <div className="font-extrabold text-base tracking-tight text-slate-900 truncate font-fancy">
                 Contoh Nama Toko
               </div>
               <div className="text-[10px] font-semibold text-brand-600 uppercase tracking-wider truncate">

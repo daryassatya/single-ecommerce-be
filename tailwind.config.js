@@ -6,6 +6,12 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Poppins', 'system-ui', '-apple-system', 'sans-serif'],
+        serif: ['Georgia', 'Cambria', '"Times New Roman"', 'serif'],
+        fancy: ['Georgia', 'Cambria', '"Times New Roman"', 'serif'],
+        mono: ['Poppins', 'monospace'],
+      },
       colors: {
         brand: {
           50: '#f0f9ff',

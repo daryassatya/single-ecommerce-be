@@ -11,7 +11,7 @@ export function SettingsModule() {
           <Sliders className="h-6 w-6" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight font-fancy">
             Pengaturan CMS Toko
           </h1>
           <p className="text-sm text-slate-500">

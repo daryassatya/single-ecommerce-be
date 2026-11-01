@@ -176,7 +176,7 @@ export function SocialLinksModule() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5 font-fancy">
             <Share2 className="w-6 h-6 text-brand-600" />
             <span>Social Media & Quick Links</span>
           </h1>

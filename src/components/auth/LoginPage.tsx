@@ -65,7 +65,7 @@ export function LoginPage() {
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-tr from-brand-600 via-sky-500 to-indigo-600 text-white shadow-xl shadow-brand-500/25 mb-4 ring-4 ring-white">
             <Sparkles className="h-8 w-8" />
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-fancy">
             Contoh Nama Toko
           </h2>
           <p className="mt-1.5 text-xs sm:text-sm font-medium text-slate-500">

@@ -42,7 +42,7 @@ export function AccountSettingsModule() {
             <ShieldCheck className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight font-fancy">
               Pengaturan Akun Admin
             </h1>
             <p className="text-xs sm:text-sm text-slate-500">

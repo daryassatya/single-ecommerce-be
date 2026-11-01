@@ -31,7 +31,7 @@ export function Header({ onToggleSidebar, activeTabTitle, onNavigateToAccount }:
             <span>/</span>
             <span className="text-brand-600">Admin</span>
           </div>
-          <h2 className="text-sm sm:text-lg lg:text-xl font-extrabold text-slate-900 tracking-tight truncate">
+          <h2 className="text-sm sm:text-lg lg:text-xl font-extrabold text-slate-900 tracking-tight truncate font-fancy">
             {activeTabTitle}
           </h2>
         </div>

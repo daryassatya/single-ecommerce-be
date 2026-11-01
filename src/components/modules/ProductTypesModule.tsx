@@ -172,7 +172,7 @@ export function ProductTypesModule() {
       {/* Header section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5 font-fancy">
             <Layers className="w-6 h-6 text-brand-600" />
             <span>Tipe Produk & Kategori</span>
           </h1>

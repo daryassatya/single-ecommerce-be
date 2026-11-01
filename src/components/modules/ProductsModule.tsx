@@ -189,7 +189,7 @@ export function ProductsModule() {
       {/* Header & Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2 font-fancy">
             <Package className="w-6 h-6 text-brand-600" />
             <span>Katalog Produk</span>
           </h1>
