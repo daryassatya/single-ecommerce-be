@@ -97,7 +97,7 @@ export function ProductsModule() {
     });
   }, [products, search, selectedTypeFilter]);
 
-  // Responsive pagination (10 on desktop, 5 on mobile)
+  // Responsive pagination (9 on desktop, 5 on mobile)
   const {
     currentPage,
     setCurrentPage,
@@ -105,7 +105,7 @@ export function ProductsModule() {
     totalItems,
     totalPages,
     paginatedItems,
-  } = useResponsivePagination(filteredProducts, 10, 5);
+  } = useResponsivePagination(filteredProducts, 9, 5);
 
   const handleCreateOrUpdate = async (input: ProductInput) => {
     try {
